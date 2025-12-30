@@ -1,0 +1,2818 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Housing Market Analyzer</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 32px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+
+        .selection-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+
+        .market-selector {
+            display: flex;
+            gap: 20px;
+            align-items: flex-end;
+            flex-wrap: wrap;
+        }
+
+        .input-group {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 14px;
+            display: block;
+        }
+
+        select, button {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #2a5298;
+        }
+
+        button {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(42, 82, 152, 0.4);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-size: 18px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #2a5298;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .results {
+            display: none;
+        }
+
+        .results.visible {
+            display: block;
+        }
+
+        .market-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .market-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .back-button {
+            width: auto;
+            padding: 10px 24px;
+            font-size: 14px;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 24px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .metric-label {
+            font-size: 13px;
+            opacity: 0.9;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .metric-value {
+            font-size: 28px;
+            font-weight: 700;
+            font-family: 'Courier New', monospace;
+        }
+
+        .metric-growth {
+            font-size: 14px;
+            margin-top: 8px;
+            opacity: 0.95;
+            font-weight: 600;
+        }
+
+        .growth-positive {
+            color: #a8e6cf;
+        }
+
+        .growth-negative {
+            color: #ffb3ba;
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #333;
+            margin: 30px 0 20px 0;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #2a5298;
+        }
+
+        .chart-container {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+
+        .chart-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        canvas {
+            max-width: 100%;
+            height: auto !important;
+        }
+
+        .submarkets-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .submarkets-table th {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 16px;
+            text-align: left;
+            font-weight: 600;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .submarkets-table th:hover {
+            background: linear-gradient(135deg, #2a5298 0%, #1e3c72 100%);
+        }
+
+        .submarkets-table th::after {
+            content: ' ⇅';
+            opacity: 0.5;
+            font-size: 12px;
+        }
+
+        .submarkets-table td {
+            padding: 14px 16px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .submarkets-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .submarkets-table tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        .value-good {
+            color: #388e3c;
+            font-weight: 600;
+        }
+
+        .value-medium {
+            color: #f57c00;
+            font-weight: 600;
+        }
+
+        .value-poor {
+            color: #d32f2f;
+            font-weight: 600;
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .info-box h3 {
+            color: #1976d2;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        .info-box p {
+            color: #555;
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
+        .error-message {
+            background: #ffebee;
+            border-left: 4px solid #f44336;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+            color: #c62828;
+        }
+
+        .bookmarks-panel {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+
+        .bookmarks-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .bookmarks-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .bookmarks-list {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .bookmark-chip {
+            background: white;
+            border: 2px solid #2a5298;
+            color: #2a5298;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .bookmark-chip .remove-btn {
+            cursor: pointer;
+            color: #d32f2f;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .bookmark-chip .remove-btn:hover {
+            color: #f44336;
+        }
+
+        .bookmark-btn {
+            background: white;
+            border: 2px solid #2a5298;
+            color: #2a5298;
+            padding: 10px 24px;
+            font-size: 14px;
+            margin-right: 10px;
+        }
+
+        .bookmark-btn:hover {
+            background: #e3f2fd;
+        }
+
+        .bookmark-btn.bookmarked {
+            background: #2a5298;
+            color: white;
+        }
+
+        .compare-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .compare-card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .compare-card h4 {
+            color: #2a5298;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+
+        .compare-metric {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .compare-metric:last-child {
+            border-bottom: none;
+        }
+
+        .compare-metric-label {
+            font-weight: 600;
+            color: #555;
+            font-size: 14px;
+        }
+
+        .compare-metric-value {
+            font-weight: 700;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .empty-bookmarks {
+            text-align: center;
+            color: #999;
+            padding: 20px;
+            font-style: italic;
+        }
+
+        #submarketMap {
+            height: 600px;
+            width: 100%;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .map-loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 1000;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .map-loading .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #2a5298;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        .map-controls {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .map-control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .map-control-group label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #666;
+            margin: 0;
+        }
+
+        .map-control-group select {
+            padding: 8px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .legend {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .legend-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .legend-scale {
+            display: flex;
+            height: 20px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 5px;
+        }
+
+        .legend-scale div {
+            flex: 1;
+        }
+
+        .legend-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .submarket-list {
+            max-height: 400px;
+            overflow-y: auto;
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        .submarket-item {
+            background: white;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 6px;
+            border-left: 4px solid #2a5298;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .submarket-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .submarket-item-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .submarket-item-zip {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .submarket-item-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 8px;
+            font-size: 12px;
+        }
+
+        .metric-mini {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .metric-mini-label {
+            color: #666;
+        }
+
+        .metric-mini-value {
+            font-weight: 600;
+            color: #333;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .market-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .back-button {
+                width: 100%;
+            }
+        }
+
+        /* Property Analysis Styles */
+        .toggle-btn {
+            padding: 12px 32px;
+            margin: 0 10px;
+            background: white;
+            border: 2px solid #2a5298;
+            color: #2a5298;
+            border-radius: 8px;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-btn.active {
+            background: linear-gradient(135deg, #2a5298 0%, #1e3a6f 100%);
+            color: white;
+        }
+
+        .toggle-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(42, 82, 152, 0.2);
+        }
+
+        .calculator-section {
+            margin-top: 30px;
+        }
+
+        .input-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin: 30px 0;
+        }
+
+        .input-section {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .input-section h4 {
+            margin: 0 0 20px 0;
+            color: #2a5298;
+            font-size: 18px;
+            border-bottom: 2px solid #e8f0fe;
+            padding-bottom: 10px;
+        }
+
+        .input-row {
+            margin-bottom: 20px;
+        }
+
+        .input-row label {
+            display: block;
+            margin-bottom: 6px;
+            color: #555;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .input-row input,
+        .input-row select {
+            width: 100%;
+            padding: 10px 14px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 15px;
+            transition: border-color 0.3s ease;
+        }
+
+        .input-row input:focus,
+        .input-row select:focus {
+            outline: none;
+            border-color: #2a5298;
+        }
+
+        .input-row small {
+            font-size: 12px;
+            line-height: 1.4;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .result-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .result-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+        }
+
+        .result-card.highlight {
+            background: linear-gradient(135deg, #e8f0fe 0%, #d4e4f7 100%);
+            border: 2px solid #2a5298;
+        }
+
+        .result-label {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .result-value {
+            font-size: 26px;
+            font-weight: 700;
+            color: #2a5298;
+        }
+
+        .target-yield-section {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .target-yield-section h4 {
+            margin: 0 0 10px 0;
+            color: #2a5298;
+            font-size: 20px;
+        }
+
+        .target-yield-section p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Housing Market Analyzer</h1>
+        <p class="subtitle">Analyze real estate markets with comprehensive demographic and economic data</p>
+
+        <div class="bookmarks-panel" id="bookmarksPanel" style="display: none;">
+            <div class="bookmarks-header">
+                <div class="bookmarks-title">📌 Bookmarked Markets</div>
+                <button class="back-button" onclick="showComparison()" id="compareButton" style="display: none;">
+                    Compare Markets →
+                </button>
+            </div>
+            <div class="bookmarks-list" id="bookmarksList">
+                <div class="empty-bookmarks">No markets bookmarked yet. Analyze a market and click the bookmark button to save it.</div>
+            </div>
+        </div>
+
+        <div class="selection-section">
+            <div class="market-selector">
+                <div class="input-group">
+                    <label for="citySelect">Select Market</label>
+                    <select id="citySelect">
+                        <option value="">Choose a city...</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <button onclick="analyzeMarket()" id="analyzeBtn">Analyze Market</button>
+                </div>
+                <div class="input-group">
+                    <button onclick="showPropertyAnalysis()" style="background: linear-gradient(135deg, #28a745 0%, #20833a 100%);">
+                        Property Investment Calculator →
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="loading" class="loading" style="display: none;">
+            <div class="spinner"></div>
+            <p>Loading market data...</p>
+        </div>
+
+        <div id="error" class="error-message" style="display: none;"></div>
+
+        <div class="results" id="marketResults">
+            <div class="market-header">
+                <h2 class="market-title" id="marketTitle">-</h2>
+                <div>
+                    <button class="bookmark-btn" onclick="toggleBookmark()" id="bookmarkBtn">
+                        ☆ Bookmark
+                    </button>
+                    <button class="back-button" onclick="resetView()">← Back to Selection</button>
+                </div>
+            </div>
+
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-label">Population</div>
+                    <div class="metric-value" id="population">-</div>
+                    <div class="metric-growth" id="populationGrowth">-</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Median Income</div>
+                    <div class="metric-value" id="medianIncome">-</div>
+                    <div class="metric-growth" id="incomeGrowth">-</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Median Home Value</div>
+                    <div class="metric-value" id="medianHomeValue">-</div>
+                    <div class="metric-growth" id="homeValueGrowth">-</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Median Rent</div>
+                    <div class="metric-value" id="medianRent">-</div>
+                    <div class="metric-growth" id="rentGrowth">-</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Property Tax Rate</div>
+                    <div class="metric-value" id="propertyTaxRate">-</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Rent-to-Value Ratio</div>
+                    <div class="metric-value" id="rentToValue">-</div>
+                </div>
+            </div>
+
+            <h3 class="section-title">Historical Trends</h3>
+
+            <div class="chart-container">
+                <div class="chart-title">Population Growth</div>
+                <canvas id="populationChart"></canvas>
+            </div>
+
+            <div class="chart-container">
+                <div class="chart-title">Median Household Income</div>
+                <canvas id="incomeChart"></canvas>
+            </div>
+
+            <div class="chart-container">
+                <div class="chart-title">Median Home Value</div>
+                <canvas id="homeValueChart"></canvas>
+            </div>
+
+            <div class="chart-container">
+                <div class="chart-title">Median Rent</div>
+                <canvas id="rentChart"></canvas>
+            </div>
+
+            <div style="text-align: center; margin: 40px 0;">
+                <button onclick="loadSubmarkets()" id="submarketBtn" style="width: auto; padding: 14px 32px;">
+                    Analyze Submarkets →
+                </button>
+            </div>
+        </div>
+
+        <div class="results" id="submarketResults">
+            <div class="market-header">
+                <h2 class="market-title" id="submarketTitle">-</h2>
+                <button class="back-button" onclick="backToMarket()">← Back to Market View</button>
+            </div>
+
+            <div class="info-box">
+                <h3>Interactive Submarket Map</h3>
+                <p>Explore all ZIP codes and neighborhoods in the market. Select a metric below to color-code the map.</p>
+            </div>
+
+            <div class="map-controls">
+                <div class="map-control-group">
+                    <label>Color Map By:</label>
+                    <select id="mapMetricSelect" onchange="updateMapColors()">
+                        <option value="vacancy">Vacancy Rate</option>
+                        <option value="poverty">Poverty Level</option>
+                        <option value="unemployment">Unemployment Rate</option>
+                        <option value="rent">Median Rent</option>
+                        <option value="income">Median Income</option>
+                        <option value="renters">Renter Occupied %</option>
+                        <option value="rentGrowth">YoY Rent Growth</option>
+                        <option value="walkScore">Walk Score</option>
+                        <option value="schools">School Rating</option>
+                        <option value="density">Population Density</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="legend" id="mapLegend">
+                <div class="legend-title">Legend</div>
+                <div class="legend-scale" id="legendScale"></div>
+                <div class="legend-labels" id="legendLabels"></div>
+            </div>
+
+            <div id="submarketMap"></div>
+
+            <h3 class="section-title">All Submarkets</h3>
+            <div class="submarket-list" id="submarketList"></div>
+        </div>
+
+        <div class="results" id="comparisonResults">
+            <div class="market-header">
+                <h2 class="market-title">Market Comparison</h2>
+                <button class="back-button" onclick="resetView()">← Back to Selection</button>
+            </div>
+
+            <div class="info-box">
+                <h3>Side-by-Side Comparison</h3>
+                <p>Compare key metrics across your bookmarked markets. Higher values are highlighted for easy comparison.</p>
+            </div>
+
+            <h3 class="section-title">Current Metrics Comparison</h3>
+            <div class="compare-container" id="compareContainer">
+            </div>
+
+            <h3 class="section-title">Growth Rate Comparison</h3>
+            <div class="chart-container">
+                <div class="chart-title">Population Growth Comparison</div>
+                <canvas id="comparePopulationChart"></canvas>
+            </div>
+
+            <div class="chart-container">
+                <div class="chart-title">Median Income Growth Comparison</div>
+                <canvas id="compareIncomeChart"></canvas>
+            </div>
+
+            <div class="chart-container">
+                <div class="chart-title">Home Value Growth Comparison</div>
+                <canvas id="compareHomeValueChart"></canvas>
+            </div>
+        </div>
+
+        <div class="results" id="propertyAnalysisResults">
+            <div class="market-header">
+                <h2 class="market-title">Property Investment Analyzer</h2>
+                <button class="back-button" onclick="resetView()">← Back to Selection</button>
+            </div>
+
+            <div class="info-box">
+                <h3>Analyze Individual Property Returns</h3>
+                <p>Calculate cash-on-cash return and IRR for long-term or short-term rental investments.</p>
+            </div>
+
+            <div class="rental-type-toggle" style="text-align: center; margin: 30px 0;">
+                <button id="longTermBtn" class="toggle-btn active" onclick="switchRentalType('longTerm')">Long-Term Rental</button>
+                <button id="shortTermBtn" class="toggle-btn" onclick="switchRentalType('shortTerm')">Short-Term Rental</button>
+            </div>
+
+            <!-- Long-Term Rental Calculator -->
+            <div id="longTermCalculator" class="calculator-section">
+                <h3 class="section-title">Long-Term Rental Analysis</h3>
+
+                <!-- Step 1: Get Rent Estimate from Rentcast.io -->
+                <div class="input-section" style="max-width: 800px; margin: 0 auto; background: linear-gradient(135deg, #e8f0fe 0%, #d4e4f7 100%); border: 2px solid #2a5298;">
+                    <h4 style="color: #2a5298;">Step 1: Get Accurate Rental Estimate</h4>
+                    <p style="margin: 15px 0; line-height: 1.6;">Use <strong>Rentcast.io</strong> to get an accurate monthly rent estimate based on real market data. Their algorithm analyzes:</p>
+                    <ul style="margin: 10px 0; padding-left: 30px; line-height: 1.8;">
+                        <li>Property address and characteristics</li>
+                        <li>Recent rental comps in the area</li>
+                        <li>Square footage, bedrooms, bathrooms</li>
+                        <li>Building type and amenities</li>
+                    </ul>
+                    <div style="text-align: center; margin: 20px 0;">
+                        <a href="https://rentcast.io" target="_blank" style="display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #28a745 0%, #20833a 100%); color: white; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 15px; box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);">
+                            Open Rentcast.io Rent Estimator →
+                        </a>
+                    </div>
+                    <p style="font-size: 13px; color: #666; text-align: center;">Once you have the monthly rent estimate, return here to continue your analysis</p>
+                </div>
+
+                <!-- Step 2: Input Rent & Calculate Max Purchase Price -->
+                <div class="input-section" style="max-width: 800px; margin: 40px auto 0 auto;">
+                    <h4>Step 2: Calculate Maximum Purchase Price</h4>
+                    <p style="color: #666; margin-bottom: 20px;">Enter the monthly rent from Rentcast.io and your target return to find the maximum price you should pay</p>
+
+                    <div style="max-width: 500px; margin: 0 auto;">
+                        <div class="input-row">
+                            <label>Monthly Rent (from Rentcast.io):</label>
+                            <input type="number" id="ltMonthlyRent" placeholder="2000" style="font-size: 18px; font-weight: 600;">
+                        </div>
+
+                        <div class="input-row">
+                            <label>Target Return Metric:</label>
+                            <div style="display: flex; gap: 20px; margin-top: 8px;">
+                                <label style="display: flex; align-items: center; cursor: pointer;">
+                                    <input type="radio" name="returnMetric" value="irr" checked onchange="toggleReturnMetric()" style="margin-right: 8px;">
+                                    <span>IRR (Internal Rate of Return)</span>
+                                </label>
+                                <label style="display: flex; align-items: center; cursor: pointer;">
+                                    <input type="radio" name="returnMetric" value="coc" onchange="toggleReturnMetric()" style="margin-right: 8px;">
+                                    <span>Cash on Cash Return</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="input-row">
+                            <label id="targetReturnLabel">Target Yield %:</label>
+                            <input type="number" step="0.5" id="ltTargetReturn" placeholder="12.0" value="12.0">
+                        </div>
+
+                        <div class="input-row">
+                            <label>Property City/Location:</label>
+                            <select id="ltCity">
+                                <option value="Nashville">Nashville, TN</option>
+                                <option value="Memphis">Memphis, TN</option>
+                                <option value="Knoxville">Knoxville, TN</option>
+                                <option value="Other">Other (use default rates)</option>
+                            </select>
+                            <small style="display: block; margin-top: 4px; color: #666;">Used to estimate property taxes</small>
+                        </div>
+                    </div>
+
+                    <div style="text-align: center; margin: 30px 0;">
+                        <button onclick="calculateQuickMaxPrice()" style="padding: 14px 40px; font-size: 16px;">
+                            Calculate Maximum Purchase Price
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Quick Results: Max Purchase Price -->
+                <div id="quickResults" style="display: none; margin-top: 40px;">
+                    <div style="background: #e8f0fe; padding: 30px; border-radius: 12px; max-width: 700px; margin: 30px auto; text-align: center;">
+                        <h4 style="margin: 0 0 15px 0; color: #2a5298;">Maximum Purchase Price</h4>
+                        <div style="font-size: 48px; font-weight: 700; color: #2a5298; margin: 20px 0;" id="calculatedMaxPrice">$0</div>
+                        <p style="color: #666; font-size: 14px;">
+                            To achieve <strong><span id="displayTargetReturn">12</span>% <span id="displayMetricType">IRR</span></strong><br>
+                            Based on <strong>$<span id="displayMonthlyRent">0</span>/month rent</strong>
+                        </p>
+                        <div style="margin-top: 20px; padding-top: 20px; border-top: 2px solid #d4e4f7; font-size: 13px; color: #666;">
+                            Assumptions: 20% down payment, 7% interest rate, 30-year loan<br>
+                            Includes estimated property tax, insurance, CapEx, and maintenance<br>
+                            <span id="irrAssumption" style="display: block; margin-top: 8px;">IRR calculated over 5-year holding period with 3% annual appreciation</span>
+                        </div>
+                    </div>
+
+                    <div style="text-align: center; margin: 30px 0;">
+                        <button onclick="showDetailedAnalysis()" style="padding: 12px 32px; font-size: 15px;">
+                            Customize Financing & Expenses for Detailed Analysis →
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Stage 3: Detailed Analysis with Financing & Expenses -->
+                <div id="detailedAnalysisSection" style="display: none; margin-top: 40px;">
+                    <h3 class="section-title">Step 3: Detailed Cash Flow Analysis</h3>
+                    <p style="text-align: center; color: #666; max-width: 800px; margin: 0 auto 30px;">Customize financing terms and operating expenses to see exact cash flow, NOI, and returns</p>
+
+                    <div class="input-grid">
+                        <!-- Purchase & Financing -->
+                        <div class="input-section">
+                            <h4>Purchase & Financing</h4>
+                            <div class="input-row">
+                                <label>Purchase Price:</label>
+                                <input type="number" id="ltPurchasePrice" placeholder="300000">
+                            </div>
+                            <div class="input-row">
+                                <label>Financing:</label>
+                                <div style="display: flex; gap: 20px; margin-top: 8px;">
+                                    <label style="display: flex; align-items: center; cursor: pointer;">
+                                        <input type="radio" name="financingType" value="financed" checked onchange="toggleFinancingOptions()" style="margin-right: 8px;">
+                                        <span>Financing Purchase</span>
+                                    </label>
+                                    <label style="display: flex; align-items: center; cursor: pointer;">
+                                        <input type="radio" name="financingType" value="cash" onchange="toggleFinancingOptions()" style="margin-right: 8px;">
+                                        <span>Cash Purchase</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Financing Options (hide if cash) -->
+                            <div id="financingOptions">
+                                <div class="input-row">
+                                    <label>Down Payment %:</label>
+                                    <input type="number" id="ltDownPayment" placeholder="20" value="20">
+                                </div>
+                            <div class="input-row">
+                                <label>Amortization Term (years):</label>
+                                <input type="number" id="ltAmortization" placeholder="30" value="30">
+                                <small style="display: block; margin-top: 4px; color: #666;">The period over which the loan is paid off (typically 30 years). This determines your monthly payment amount.</small>
+                            </div>
+                            <div class="input-row">
+                                <label>Payment Frequency:</label>
+                                <select id="ltPaymentFreq">
+                                    <option value="monthly">Monthly</option>
+                                    <option value="biweekly">Bi-weekly</option>
+                                </select>
+                            </div>
+                            <div class="input-row">
+                                <label>Loan Type:</label>
+                                <select id="ltLoanType" onchange="toggleARMOptions()">
+                                    <option value="fixed">Fixed Rate</option>
+                                    <option value="arm">ARM (Adjustable Rate)</option>
+                                </select>
+                            </div>
+
+                            <!-- Fixed Rate Options -->
+                            <div id="fixedRateOptions" style="display: block;">
+                                <div class="input-row">
+                                    <label>Interest Rate %:</label>
+                                    <input type="number" step="0.01" id="ltFixedRate" placeholder="7.0" value="7.0">
+                                </div>
+                            </div>
+
+                            <!-- ARM Options -->
+                            <div id="armOptions" style="display: none;">
+                                <div class="input-row">
+                                    <label>ARM Type:</label>
+                                    <select id="ltARMType">
+                                        <option value="5/1">5/1 ARM (most popular)</option>
+                                        <option value="5/6">5/6 ARM</option>
+                                        <option value="7/1">7/1 ARM</option>
+                                        <option value="7/6">7/6 ARM</option>
+                                        <option value="10/1">10/1 ARM</option>
+                                        <option value="10/6">10/6 ARM</option>
+                                        <option value="3/1">3/1 ARM</option>
+                                        <option value="3/6">3/6 ARM</option>
+                                        <option value="2/1">2/1 ARM</option>
+                                        <option value="1/1">1/1 ARM</option>
+                                    </select>
+                                    <small style="display: block; margin-top: 4px; color: #666;">Format: Fixed years / Adjustment frequency. 5/1 = Fixed 5 years, adjusts annually. 5/6 = Fixed 5 years, adjusts every 6 months.</small>
+                                </div>
+                                <div class="input-row">
+                                    <label>Initial/Teaser Rate %:</label>
+                                    <input type="number" step="0.01" id="ltInitialRate" placeholder="5.5">
+                                    <small style="display: block; margin-top: 4px; color: #666;">The fixed interest rate during the initial period</small>
+                                </div>
+                                <div class="input-row">
+                                    <label>Index (after fixed period):</label>
+                                    <select id="ltARMIndex">
+                                        <option value="sofr">SOFR (Secured Overnight Financing Rate)</option>
+                                        <option value="prime">Prime Rate</option>
+                                        <option value="libor">LIBOR (legacy)</option>
+                                        <option value="cmt">CMT (Constant Maturity Treasury)</option>
+                                    </select>
+                                </div>
+                                <div class="input-row">
+                                    <label>Margin %:</label>
+                                    <input type="number" step="0.01" id="ltARMMargin" placeholder="2.25">
+                                    <small style="display: block; margin-top: 4px; color: #666;">Added to the index to determine your adjusted rate (typically 2-3%)</small>
+                                </div>
+                                <div class="input-row">
+                                    <label>Rate Caps (Initial/Periodic/Lifetime):</label>
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+                                        <input type="number" step="0.1" id="ltARMCapInitial" placeholder="2.0" style="padding: 8px;">
+                                        <input type="number" step="0.1" id="ltARMCapPeriodic" placeholder="2.0" style="padding: 8px;">
+                                        <input type="number" step="0.1" id="ltARMCapLifetime" placeholder="5.0" style="padding: 8px;">
+                                    </div>
+                                    <small style="display: block; margin-top: 4px; color: #666;">Max rate increase: first adjustment / each period / over life of loan</small>
+                                </div>
+                                <div class="input-row">
+                                    <label>Rate Floor %:</label>
+                                    <input type="number" step="0.01" id="ltARMFloor" placeholder="3.0">
+                                    <small style="display: block; margin-top: 4px; color: #666;">Minimum interest rate (optional)</small>
+                                </div>
+                            </div>
+
+                            <div class="input-row">
+                                <label>Prepayment Penalty:</label>
+                                <select id="ltPrepayment" onchange="togglePrepaymentDetails()">
+                                    <option value="none">None</option>
+                                    <option value="soft">Soft (refinance allowed)</option>
+                                    <option value="hard">Hard (all prepayment penalized)</option>
+                                </select>
+                            </div>
+                            <div id="prepaymentDetails" style="display: none;">
+                                <div class="input-row">
+                                    <label>Penalty % of Loan Balance:</label>
+                                    <input type="number" step="0.1" id="ltPrepaymentPct" placeholder="2.0">
+                                </div>
+                                <div class="input-row">
+                                    <label>Penalty Period (years):</label>
+                                    <input type="number" id="ltPrepaymentYears" placeholder="3">
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+
+                        <!-- Operating Expenses -->
+                        <div class="input-section">
+                            <h4>Operating Expenses</h4>
+                            <div class="input-row">
+                                <label>Annual Property Tax:</label>
+                                <input type="number" id="ltPropertyTax" placeholder="Auto-calculated">
+                                <small style="display: block; margin-top: 4px; color: #666;">Leave blank for auto-estimate based on city</small>
+                            </div>
+                            <div class="input-row">
+                                <label>Annual Insurance:</label>
+                                <input type="number" id="ltInsurance" placeholder="1200">
+                                <small style="display: block; margin-top: 4px; color: #888; font-style: italic;">Disclaimer: Consult with insurance professional for accurate quotes.</small>
+                            </div>
+                            <div class="input-row">
+                                <label>Monthly HOA Fees:</label>
+                                <input type="number" id="ltHOA" placeholder="0" value="0">
+                            </div>
+                            <div class="input-row">
+                                <label>Annual CapEx Reserves:</label>
+                                <input type="number" id="ltCapex" placeholder="Auto-calculated">
+                                <small style="display: block; margin-top: 4px; color: #888; font-style: italic;">Leave blank for 1% of purchase price (industry standard)</small>
+                            </div>
+                            <div class="input-row">
+                                <label>Annual Maintenance:</label>
+                                <input type="number" id="ltMaintenance" placeholder="Auto-calculated">
+                                <small style="display: block; margin-top: 4px; color: #888; font-style: italic;">Leave blank for 1% of purchase price (industry standard)</small>
+                            </div>
+                            <div class="input-row">
+                                <label>Vacancy Rate %:</label>
+                                <input type="number" step="0.1" id="ltVacancy" placeholder="5.0" value="5.0">
+                                <small style="display: block; margin-top: 4px; color: #666;">Check submarket analyzer for area rates</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="text-align: center; margin: 40px 0;">
+                        <button onclick="calculateDetailedReturns()" style="padding: 14px 40px; font-size: 16px;">
+                            Calculate Detailed Returns
+                        </button>
+                    </div>
+
+                    <!-- Detailed Results -->
+                    <div id="detailedResults" style="display: none;">
+                        <h3 class="section-title">Complete Investment Analysis</h3>
+
+                        <div class="results-grid">
+                            <div class="result-card">
+                                <div class="result-label">Down Payment</div>
+                                <div class="result-value" id="ltDownPaymentAmount">$0</div>
+                            </div>
+                            <div class="result-card">
+                                <div class="result-label">Loan Amount</div>
+                                <div class="result-value" id="ltLoanAmount">$0</div>
+                            </div>
+                            <div class="result-card">
+                                <div class="result-label">Monthly P&I Payment</div>
+                                <div class="result-value" id="ltMonthlyPayment">$0</div>
+                            </div>
+                            <div class="result-card">
+                                <div class="result-label">Total Monthly Expense</div>
+                                <div class="result-value" id="ltTotalMonthly">$0</div>
+                            </div>
+                            <div class="result-card">
+                                <div class="result-label">Monthly Cash Flow</div>
+                                <div class="result-value" id="ltMonthlyCashFlow">$0</div>
+                            </div>
+                            <div class="result-card">
+                                <div class="result-label">Annual NOI</div>
+                                <div class="result-value" id="ltNOI">$0</div>
+                            </div>
+                            <div class="result-card highlight">
+                                <div class="result-label">Cash on Cash Return</div>
+                                <div class="result-value" id="ltCashOnCash">0%</div>
+                            </div>
+                            <div class="result-card highlight">
+                                <div class="result-label">Cap Rate</div>
+                                <div class="result-value" id="ltCapRate">0%</div>
+                            </div>
+                        </div>
+
+                        <!-- Loan Details Display -->
+                        <div id="loanDetailsDisplay" style="margin-top: 30px; max-width: 800px; margin-left: auto; margin-right: auto;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Short-Term Rental Calculator (Placeholder) -->
+            <div id="shortTermCalculator" class="calculator-section" style="display: none;">
+                <h3 class="section-title">Short-Term Rental Analysis</h3>
+                <div class="info-box" style="text-align: center; padding: 60px 20px;">
+                    <h3>Coming Soon</h3>
+                    <p>Short-term rental analysis tool with AirDNA integration will be available soon.</p>
+                    <p style="margin-top: 20px;">Features will include:</p>
+                    <ul style="text-align: left; max-width: 600px; margin: 20px auto; line-height: 1.8;">
+                        <li>Daily/nightly rate calculations</li>
+                        <li>Occupancy rate projections</li>
+                        <li>Seasonal demand analysis</li>
+                        <li>Operating expense tracking (utilities, cleaning, management)</li>
+                        <li>STR-specific metrics and returns</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentMarket = null;
+        let currentSubmarkets = null;
+        let sortDirection = {};
+        let bookmarkedMarkets = [];
+        let bookmarkedData = {}; // Store full market data for comparison
+        let submarketMap = null;
+        let submarketMarkers = [];
+        let currentMetric = 'vacancy';
+        let leafletLoaded = false;
+        let leafletLoading = false;
+
+        // Lazy load Leaflet.js library
+        async function loadLeaflet() {
+            if (leafletLoaded) return true;
+            if (leafletLoading) {
+                // Wait for existing load to complete
+                while (leafletLoading) {
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                }
+                return leafletLoaded;
+            }
+
+            leafletLoading = true;
+
+            try {
+                // Load CSS
+                const cssLink = document.createElement('link');
+                cssLink.rel = 'stylesheet';
+                cssLink.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+                document.head.appendChild(cssLink);
+
+                // Load JS
+                await new Promise((resolve, reject) => {
+                    const script = document.createElement('script');
+                    script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+                    script.onload = resolve;
+                    script.onerror = reject;
+                    document.head.appendChild(script);
+                });
+
+                // Load marker cluster plugin for better performance
+                const clusterCSS = document.createElement('link');
+                clusterCSS.rel = 'stylesheet';
+                clusterCSS.href = 'https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css';
+                document.head.appendChild(clusterCSS);
+
+                const clusterDefaultCSS = document.createElement('link');
+                clusterDefaultCSS.rel = 'stylesheet';
+                clusterDefaultCSS.href = 'https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css';
+                document.head.appendChild(clusterDefaultCSS);
+
+                await new Promise((resolve, reject) => {
+                    const clusterScript = document.createElement('script');
+                    clusterScript.src = 'https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js';
+                    clusterScript.onload = resolve;
+                    clusterScript.onerror = reject;
+                    document.head.appendChild(clusterScript);
+                });
+
+                leafletLoaded = true;
+                return true;
+            } catch (error) {
+                console.error('Failed to load Leaflet:', error);
+                leafletLoading = false;
+                return false;
+            } finally {
+                leafletLoading = false;
+            }
+        }
+
+        // Load available markets on page load
+        async function loadMarkets() {
+            try {
+                const response = await fetch('/api/markets');
+                const data = await response.json();
+
+                if (data.success) {
+                    const select = document.getElementById('citySelect');
+                    data.markets.forEach(market => {
+                        const option = document.createElement('option');
+                        option.value = market.city;
+                        option.textContent = `${market.city}, ${market.state}`;
+                        select.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                showError('Failed to load markets');
+            }
+        }
+
+        async function analyzeMarket() {
+            const city = document.getElementById('citySelect').value;
+            if (!city) {
+                alert('Please select a city');
+                return;
+            }
+
+            showLoading();
+            hideError();
+
+            try {
+                const response = await fetch(`/api/markets/${city}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    currentMarket = data.market;
+                    displayMarketData(data.market);
+                } else {
+                    showError(data.error || 'Failed to load market data');
+                }
+            } catch (error) {
+                showError('Failed to load market data');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function displayMarketData(market) {
+            document.getElementById('marketTitle').textContent = `${market.name}, ${market.state}`;
+
+            // Display current values
+            document.getElementById('population').textContent = market.current.population.toLocaleString();
+            document.getElementById('medianIncome').textContent = '$' + market.current.medianIncome.toLocaleString();
+            document.getElementById('medianHomeValue').textContent = '$' + market.current.medianHomeValue.toLocaleString();
+            document.getElementById('medianRent').textContent = '$' + market.current.medianRent.toLocaleString();
+            document.getElementById('propertyTaxRate').textContent = market.current.propertyTaxRate + '%';
+            document.getElementById('rentToValue').textContent = market.current.rentToValueRatio + '%';
+
+            // Calculate and display growth rates
+            if (market.historical && market.historical.length > 0) {
+                const earliest = market.historical[0];
+                const latest = market.historical[market.historical.length - 1];
+                const years = latest.year - earliest.year;
+
+                // Population growth
+                const popGrowth = calculateGrowth(earliest.population, market.current.population, years);
+                displayGrowth('populationGrowth', popGrowth, years, false);
+
+                // Income growth
+                const incomeGrowth = calculateGrowth(earliest.medianIncome, market.current.medianIncome, years);
+                displayGrowth('incomeGrowth', incomeGrowth, years, true);
+
+                // Home value growth
+                const homeGrowth = calculateGrowth(earliest.medianHomeValue, market.current.medianHomeValue, years);
+                displayGrowth('homeValueGrowth', homeGrowth, years, true);
+
+                // Rent growth
+                const rentGrowth = calculateGrowth(earliest.medianRent, market.current.medianRent, years);
+                displayGrowth('rentGrowth', rentGrowth, years, true);
+            }
+
+            // Show results first, then draw charts (needs DOM to be visible for sizing)
+            document.getElementById('marketResults').classList.add('visible');
+
+            // Update bookmark button state
+            updateBookmarkButton();
+
+            // Draw charts after a brief delay to ensure containers are rendered
+            setTimeout(() => {
+                drawChart('populationChart', market.historical, 'population', 'Population');
+                drawChart('incomeChart', market.historical, 'medianIncome', 'Median Income', true);
+                drawChart('homeValueChart', market.historical, 'medianHomeValue', 'Home Value', true);
+                drawChart('rentChart', market.historical, 'medianRent', 'Rent', true);
+            }, 100);
+        }
+
+        function calculateGrowth(oldValue, newValue, years) {
+            if (!oldValue || oldValue === 0) return 0;
+            const totalGrowth = ((newValue - oldValue) / oldValue) * 100;
+            const annualGrowth = Math.pow(1 + (totalGrowth / 100), 1 / years) - 1;
+            return {
+                total: totalGrowth,
+                annual: annualGrowth * 100,
+                absolute: newValue - oldValue
+            };
+        }
+
+        function displayGrowth(elementId, growth, years, isDollar = false) {
+            const element = document.getElementById(elementId);
+            const sign = growth.total >= 0 ? '+' : '';
+            const className = growth.total >= 0 ? 'growth-positive' : 'growth-negative';
+
+            const absoluteStr = isDollar
+                ? '$' + Math.abs(Math.round(growth.absolute)).toLocaleString()
+                : Math.abs(Math.round(growth.absolute)).toLocaleString();
+
+            element.className = `metric-growth ${className}`;
+            element.innerHTML = `${sign}${growth.total.toFixed(1)}% (${years}yr)<br>${sign}${absoluteStr}`;
+        }
+
+        function drawChart(canvasId, data, field, label, isDollar = false) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) {
+                console.error(`Canvas ${canvasId} not found`);
+                return;
+            }
+
+            const ctx = canvas.getContext('2d');
+
+            // Get parent container width for responsive sizing
+            const container = canvas.parentElement;
+            const containerWidth = container.offsetWidth - 50; // Account for padding
+
+            canvas.width = containerWidth > 0 ? containerWidth : 800;
+            canvas.height = 300;
+
+            const width = canvas.width;
+            const height = canvas.height;
+            const padding = 60;
+            const chartWidth = width - 2 * padding;
+            const chartHeight = height - 2 * padding;
+
+            ctx.clearRect(0, 0, width, height);
+
+            // Check if we have valid data
+            if (!data || data.length === 0) {
+                ctx.fillStyle = '#666';
+                ctx.font = '16px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('No historical data available', width / 2, height / 2);
+                return;
+            }
+
+            const years = data.map(d => d.year);
+            const values = data.map(d => d[field]);
+            const minValue = Math.min(...values) * 0.9;
+            const maxValue = Math.max(...values) * 1.1;
+
+            // Draw axes
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(padding, padding);
+            ctx.lineTo(padding, height - padding);
+            ctx.lineTo(width - padding, height - padding);
+            ctx.stroke();
+
+            // Draw line
+            ctx.strokeStyle = '#764ba2';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+
+            data.forEach((point, index) => {
+                const x = padding + (index / (data.length - 1)) * chartWidth;
+                const y = height - padding - ((values[index] - minValue) / (maxValue - minValue)) * chartHeight;
+
+                if (index === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            });
+            ctx.stroke();
+
+            // Draw points
+            ctx.fillStyle = '#764ba2';
+            data.forEach((point, index) => {
+                const x = padding + (index / (data.length - 1)) * chartWidth;
+                const y = height - padding - ((values[index] - minValue) / (maxValue - minValue)) * chartHeight;
+
+                ctx.beginPath();
+                ctx.arc(x, y, 5, 0, 2 * Math.PI);
+                ctx.fill();
+            });
+
+            // Labels
+            ctx.fillStyle = '#333';
+            ctx.font = '12px sans-serif';
+            ctx.textAlign = 'center';
+
+            // X-axis labels
+            years.forEach((year, index) => {
+                const x = padding + (index / (data.length - 1)) * chartWidth;
+                ctx.fillText(year, x, height - padding + 20);
+            });
+
+            // Y-axis labels
+            const ySteps = 5;
+            ctx.textAlign = 'right';
+            for (let i = 0; i <= ySteps; i++) {
+                const value = minValue + (i / ySteps) * (maxValue - minValue);
+                const y = height - padding - (i / ySteps) * chartHeight;
+                const displayValue = isDollar ? '$' + Math.round(value).toLocaleString() : Math.round(value).toLocaleString();
+                ctx.fillText(displayValue, padding - 10, y + 4);
+            }
+        }
+
+        async function loadSubmarkets() {
+            if (!currentMarket) return;
+
+            showLoading();
+
+            try {
+                const response = await fetch(`/api/markets/${currentMarket.name}/submarkets`);
+                const data = await response.json();
+
+                if (data.success) {
+                    currentSubmarkets = data.submarkets;
+
+                    // Hide main loading, show submarket view
+                    hideLoading();
+                    document.getElementById('marketResults').classList.remove('visible');
+                    document.getElementById('submarketResults').classList.add('visible');
+                    document.getElementById('submarketTitle').textContent = `${currentMarket.name} Submarkets`;
+
+                    // Display submarkets (this will show its own loading indicator for the map)
+                    await displaySubmarkets(data.submarkets);
+                } else {
+                    hideLoading();
+                    showError(data.error || 'Failed to load submarkets');
+                }
+            } catch (error) {
+                hideLoading();
+                showError('Failed to load submarkets');
+            }
+        }
+
+        async function displaySubmarkets(submarkets) {
+            console.log('displaySubmarkets called with', submarkets.length, 'submarkets');
+
+            // Show map loading indicator
+            const mapContainer = document.getElementById('submarketMap');
+            mapContainer.innerHTML = '<div class="map-loading"><div class="spinner"></div><p>Loading interactive map...</p></div>';
+
+            // Load Leaflet library if not already loaded
+            const loaded = await loadLeaflet();
+            console.log('Leaflet loaded:', loaded);
+            if (!loaded) {
+                mapContainer.innerHTML = '<div class="map-loading"><p style="color: #f44336;">Failed to load map. Please refresh the page.</p></div>';
+                return;
+            }
+
+            // Initialize map
+            await initializeSubmarketMap();
+            console.log('Map initialized');
+
+            // Display list
+            const listContainer = document.getElementById('submarketList');
+            listContainer.innerHTML = '';
+
+            submarkets.forEach(sub => {
+                const item = document.createElement('div');
+                item.className = 'submarket-item';
+                item.onclick = () => highlightSubmarket(sub);
+
+                const vacancyClass = sub.vacancyRate < 5 ? 'value-good' : sub.vacancyRate > 8 ? 'value-poor' : 'value-medium';
+                const povertyClass = sub.povertyLevel < 8 ? 'value-good' : sub.povertyLevel > 15 ? 'value-poor' : 'value-medium';
+                const unemploymentClass = sub.unemploymentRate < 4 ? 'value-good' : sub.unemploymentRate > 6 ? 'value-poor' : 'value-medium';
+                const rentGrowthClass = sub.yoyRentGrowth > 5 ? 'value-good' : sub.yoyRentGrowth < 2 ? 'value-poor' : 'value-medium';
+                const walkScoreClass = sub.walkScore > 70 ? 'value-good' : sub.walkScore < 50 ? 'value-poor' : 'value-medium';
+                const schoolClass = sub.schoolRating > 7 ? 'value-good' : sub.schoolRating < 5 ? 'value-poor' : 'value-medium';
+
+                item.innerHTML = `
+                    <div class="submarket-item-name">${sub.name}</div>
+                    <div class="submarket-item-zip">ZIP: ${sub.zipCode}</div>
+                    <div class="submarket-item-metrics">
+                        <div class="metric-mini">
+                            <span class="metric-mini-label">Vacancy:</span>
+                            <span class="metric-mini-value ${vacancyClass}">${sub.vacancyRate}%</span>
+                        </div>
+                        <div class="metric-mini">
+                            <span class="metric-mini-label">Poverty:</span>
+                            <span class="metric-mini-value ${povertyClass}">${sub.povertyLevel}%</span>
+                        </div>
+                        <div class="metric-mini">
+                            <span class="metric-mini-label">Unemployment:</span>
+                            <span class="metric-mini-value ${unemploymentClass}">${sub.unemploymentRate}%</span>
+                        </div>
+                        <div class="metric-mini">
+                            <span class="metric-mini-label">Rent:</span>
+                            <span class="metric-mini-value">$${sub.medianRent.toLocaleString()}</span>
+                        </div>
+                        <div class="metric-mini">
+                            <span class="metric-mini-label">Income:</span>
+                            <span class="metric-mini-value">$${sub.medianIncome.toLocaleString()}</span>
+                        </div>
+                        <div class="metric-mini">
+                            <span class="metric-mini-label">Renters:</span>
+                            <span class="metric-mini-value">${sub.renterOccupiedPct}%</span>
+                        </div>
+                        <div class="metric-mini">
+                            <span class="metric-mini-label">Rent Growth:</span>
+                            <span class="metric-mini-value ${rentGrowthClass}">${sub.yoyRentGrowth}%</span>
+                        </div>
+                        <div class="metric-mini">
+                            <span class="metric-mini-label">Walk Score:</span>
+                            <span class="metric-mini-value ${walkScoreClass}">${sub.walkScore}</span>
+                        </div>
+                        <div class="metric-mini">
+                            <span class="metric-mini-label">Schools:</span>
+                            <span class="metric-mini-value ${schoolClass}">${sub.schoolRating}/10</span>
+                        </div>
+                        <div class="metric-mini">
+                            <span class="metric-mini-label">Median Age:</span>
+                            <span class="metric-mini-value">${sub.medianAge}</span>
+                        </div>
+                        <div class="metric-mini">
+                            <span class="metric-mini-label">Pop. Density:</span>
+                            <span class="metric-mini-value">${sub.populationDensity.toLocaleString()}/mi²</span>
+                        </div>
+                        <div class="metric-mini">
+                            <span class="metric-mini-label">HH Size:</span>
+                            <span class="metric-mini-value">${sub.avgHouseholdSize}</span>
+                        </div>
+                    </div>
+                `;
+
+                listContainer.appendChild(item);
+            });
+
+            // Add markers to map
+            addSubmarketMarkers(submarkets);
+        }
+
+        async function initializeSubmarketMap() {
+            return new Promise((resolve) => {
+                // Clear loading indicator
+                const mapContainer = document.getElementById('submarketMap');
+                mapContainer.innerHTML = '';
+
+                if (submarketMap) {
+                    submarketMap.remove();
+                }
+
+                // City center coordinates
+                const cityCoords = {
+                    'Nashville': [36.1627, -86.7816],
+                    'Memphis': [35.1495, -90.0490],
+                    'Knoxville': [35.9606, -83.9207]
+                };
+
+                const center = cityCoords[currentMarket.name] || [36.1627, -86.7816];
+
+                // Initialize map with optimized settings
+                submarketMap = L.map('submarketMap', {
+                    preferCanvas: true, // Use canvas for better performance
+                    zoomControl: true
+                }).setView(center, 11);
+
+                // Add tile layer with optimized settings
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© OpenStreetMap contributors',
+                    maxZoom: 18,
+                    updateWhenIdle: true, // Only update tiles when map stops moving
+                    keepBuffer: 2 // Keep fewer tiles in memory
+                }).addTo(submarketMap);
+
+                // Wait for map to be ready
+                setTimeout(() => {
+                    submarketMap.invalidateSize();
+                    resolve();
+                }, 100);
+            });
+        }
+
+        function addSubmarketMarkers(submarkets) {
+            console.log('addSubmarketMarkers called with', submarkets.length, 'submarkets');
+
+            // Clear existing markers
+            submarketMarkers.forEach(marker => marker.remove());
+            submarketMarkers = [];
+
+            // Approximate ZIP code coordinates (in production, use Census geocoding API)
+            const zipCoords = {
+                // Nashville
+                '37206': [36.1778, -86.7316], // East Nashville
+                '37203': [36.1502, -86.7866], // The Gulch
+                '37215': [36.1064, -86.8107], // Green Hills
+                '37208': [36.1823, -86.7844], // Germantown
+                '37212': [36.1400, -86.7953], // Music Row
+                '37214': [36.1958, -86.6794], // Donelson
+                '37209': [36.1640, -86.8145], // Sylvan Park
+                '37211': [36.0890, -86.7430], // Crieve Hall
+                '37220': [36.0620, -86.7152], // Oak Hill
+                '37205': [36.1278, -86.8358], // Belle Meade
+
+                // Memphis
+                '38104': [35.1362, -90.0258], // Midtown
+                '38119': [35.0903, -89.9104], // East Memphis
+                '38138': [35.0867, -89.8170], // Germantown
+                '38103': [35.1440, -90.0520], // Downtown
+                '38016': [35.1548, -89.7933], // Cordova
+                '38134': [35.2047, -89.8740], // Bartlett
+                '38115': [35.1019, -89.9710], // Parkway Village
+                '38109': [35.0867, -90.0579], // Whitehaven
+                '38111': [35.1062, -89.9844], // High Point Terrace
+                '38117': [35.1573, -89.9118], // Raleigh
+
+                // Knoxville
+                '37902': [35.9606, -83.9207], // Downtown
+                '37919': [35.9346, -83.9624], // Sequoyah Hills/Bearden
+                '37922': [35.9158, -84.0265], // West Knoxville
+                '37934': [35.8851, -84.1726], // Farragut
+                '37917': [35.9939, -83.9450], // North Knoxville
+                '37916': [35.9695, -83.8925], // South Knoxville
+                '37920': [35.9879, -83.8694], // East Knoxville
+                '37921': [35.9436, -83.8892], // Fort Sanders
+                '37918': [36.0179, -83.9629], // Fountain City
+                '37923': [35.8973, -83.9875], // Cedar Bluff
+            };
+
+            submarkets.forEach(sub => {
+                const coords = zipCoords[sub.zipCode];
+                if (!coords) return;
+
+                const marker = L.circleMarker(coords, {
+                    radius: 12,
+                    fillColor: '#2a5298',
+                    fillOpacity: 0.9,
+                    color: '#fff',
+                    weight: 3
+                });
+
+                // Log first marker creation to debug
+                if (submarketMarkers.length === 0) {
+                    console.log('Creating first marker for', sub.name, 'at coords', coords);
+                }
+
+                marker.subData = sub;
+
+                marker.bindPopup(`
+                    <div style="font-family: sans-serif; max-width: 280px;">
+                        <h4 style="margin: 0 0 8px 0; color: #2a5298;">${sub.name}</h4>
+                        <div style="font-size: 12px; color: #666; margin-bottom: 8px;">ZIP: ${sub.zipCode}</div>
+                        <div style="font-size: 13px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                            <div style="margin: 4px 0;"><strong>Vacancy:</strong> ${sub.vacancyRate}%</div>
+                            <div style="margin: 4px 0;"><strong>Poverty:</strong> ${sub.povertyLevel}%</div>
+                            <div style="margin: 4px 0;"><strong>Unemployment:</strong> ${sub.unemploymentRate}%</div>
+                            <div style="margin: 4px 0;"><strong>Renters:</strong> ${sub.renterOccupiedPct}%</div>
+                            <div style="margin: 4px 0; grid-column: 1 / -1;"><strong>Median Rent:</strong> $${sub.medianRent.toLocaleString()}</div>
+                            <div style="margin: 4px 0; grid-column: 1 / -1;"><strong>Median Income:</strong> $${sub.medianIncome.toLocaleString()}</div>
+                            <div style="margin: 4px 0;"><strong>Rent Growth:</strong> ${sub.yoyRentGrowth}%</div>
+                            <div style="margin: 4px 0;"><strong>Walk Score:</strong> ${sub.walkScore}</div>
+                            <div style="margin: 4px 0;"><strong>School Rating:</strong> ${sub.schoolRating}/10</div>
+                            <div style="margin: 4px 0;"><strong>Median Age:</strong> ${sub.medianAge}</div>
+                            <div style="margin: 4px 0;"><strong>Pop. Density:</strong> ${sub.populationDensity.toLocaleString()}/mi²</div>
+                            <div style="margin: 4px 0;"><strong>Household Size:</strong> ${sub.avgHouseholdSize}</div>
+                        </div>
+                    </div>
+                `);
+
+                // Add marker directly to map
+                marker.addTo(submarketMap);
+                submarketMarkers.push(marker);
+            });
+
+            console.log('Added', submarketMarkers.length, 'markers to map');
+
+            // Update colors after markers are added to the map
+            // Use setTimeout to ensure markers are fully rendered
+            setTimeout(() => {
+                console.log('Calling updateMapColors() after timeout');
+                updateMapColors();
+            }, 100);
+        }
+
+        function updateMapColors() {
+            const metric = document.getElementById('mapMetricSelect').value;
+            currentMetric = metric;
+
+            if (!currentSubmarkets || submarketMarkers.length === 0) {
+                console.log('Cannot update colors:', {
+                    hasSubmarkets: !!currentSubmarkets,
+                    markerCount: submarketMarkers.length
+                });
+                return;
+            }
+
+            console.log('Updating map colors for metric:', metric, 'Markers:', submarketMarkers.length);
+
+            // Get metric values for color scaling
+            const metricMap = {
+                'vacancy': 'vacancyRate',
+                'poverty': 'povertyLevel',
+                'rent': 'medianRent',
+                'unemployment': 'unemploymentRate',
+                'income': 'medianIncome',
+                'renters': 'renterOccupiedPct',
+                'rentGrowth': 'yoyRentGrowth',
+                'walkScore': 'walkScore',
+                'schools': 'schoolRating',
+                'density': 'populationDensity'
+            };
+
+            const field = metricMap[metric];
+            const values = currentSubmarkets.map(s => s[field]);
+            const min = Math.min(...values);
+            const max = Math.max(...values);
+
+            // Metrics where higher values are better
+            const higherIsBetter = ['income', 'rentGrowth', 'walkScore', 'schools'];
+            // Metrics that use neutral blue scale (neither good nor bad)
+            const neutralMetrics = ['rent', 'renters', 'density'];
+
+            // Color markers based on metric
+            submarketMarkers.forEach((marker, index) => {
+                const value = marker.subData[field];
+                const normalized = (value - min) / (max - min);
+
+                let color;
+                if (neutralMetrics.includes(metric)) {
+                    // Blue scale for neutral metrics
+                    const intensity = Math.round(normalized * 200 + 55);
+                    color = `rgb(${intensity}, ${intensity}, 255)`;
+                } else if (higherIsBetter.includes(metric)) {
+                    // Green to red for metrics where higher is better (inverted)
+                    if (normalized > 0.66) {
+                        color = '#4caf50'; // Green
+                    } else if (normalized > 0.33) {
+                        color = '#ff9800'; // Orange
+                    } else {
+                        color = '#f44336'; // Red
+                    }
+                } else {
+                    // Green to red for metrics where lower is better
+                    if (normalized < 0.33) {
+                        color = '#4caf50'; // Green
+                    } else if (normalized < 0.66) {
+                        color = '#ff9800'; // Orange
+                    } else {
+                        color = '#f44336'; // Red
+                    }
+                }
+
+                // Log first marker color to debug
+                if (index === 0) {
+                    console.log('First marker:', marker.subData.name, 'value:', value, 'normalized:', normalized, 'color:', color);
+                }
+
+                marker.setStyle({ fillColor: color });
+            });
+
+            console.log('Color update complete. Min:', min, 'Max:', max);
+
+            // Update legend
+            updateLegend(metric, min, max);
+        }
+
+        function updateLegend(metric, min, max) {
+            const metricNames = {
+                'vacancy': 'Vacancy Rate',
+                'poverty': 'Poverty Level',
+                'rent': 'Median Rent',
+                'unemployment': 'Unemployment Rate',
+                'income': 'Median Income',
+                'renters': 'Renter Occupied %',
+                'rentGrowth': 'YoY Rent Growth',
+                'walkScore': 'Walk Score',
+                'schools': 'School Rating',
+                'density': 'Population Density'
+            };
+
+            const legendTitle = document.querySelector('.legend-title');
+            legendTitle.textContent = `${metricNames[metric]} Legend`;
+
+            const higherIsBetter = ['income', 'rentGrowth', 'walkScore', 'schools'];
+            const neutralMetrics = ['rent', 'renters', 'density'];
+
+            const scale = document.getElementById('legendScale');
+            if (neutralMetrics.includes(metric)) {
+                // Blue scale for neutral metrics
+                scale.innerHTML = `
+                    <div style="background: rgb(55, 55, 255);"></div>
+                    <div style="background: rgb(100, 100, 255);"></div>
+                    <div style="background: rgb(155, 155, 255);"></div>
+                    <div style="background: rgb(205, 205, 255);"></div>
+                    <div style="background: rgb(255, 255, 255);"></div>
+                `;
+            } else if (higherIsBetter.includes(metric)) {
+                // Red to green for metrics where higher is better
+                scale.innerHTML = `
+                    <div style="background: #f44336;"></div>
+                    <div style="background: #ff5722;"></div>
+                    <div style="background: #ff9800;"></div>
+                    <div style="background: #8bc34a;"></div>
+                    <div style="background: #4caf50;"></div>
+                `;
+            } else {
+                // Green to red for metrics where lower is better
+                scale.innerHTML = `
+                    <div style="background: #4caf50;"></div>
+                    <div style="background: #8bc34a;"></div>
+                    <div style="background: #ff9800;"></div>
+                    <div style="background: #ff5722;"></div>
+                    <div style="background: #f44336;"></div>
+                `;
+            }
+
+            const labels = document.getElementById('legendLabels');
+            let minLabel, maxLabel, minText, maxText;
+
+            // Format labels based on metric type
+            if (metric === 'rent' || metric === 'income') {
+                minLabel = `$${min.toLocaleString()}`;
+                maxLabel = `$${max.toLocaleString()}`;
+            } else if (metric === 'density') {
+                minLabel = `${min.toLocaleString()}/mi²`;
+                maxLabel = `${max.toLocaleString()}/mi²`;
+            } else if (metric === 'walkScore') {
+                minLabel = min.toFixed(0);
+                maxLabel = max.toFixed(0);
+            } else if (metric === 'schools') {
+                minLabel = `${min.toFixed(1)}/10`;
+                maxLabel = `${max.toFixed(1)}/10`;
+            } else {
+                minLabel = `${min.toFixed(1)}%`;
+                maxLabel = `${max.toFixed(1)}%`;
+            }
+
+            // Determine label text based on metric type
+            if (neutralMetrics.includes(metric)) {
+                minText = 'Lower';
+                maxText = 'Higher';
+            } else if (higherIsBetter.includes(metric)) {
+                minText = 'Worse';
+                maxText = 'Better';
+            } else {
+                minText = 'Better';
+                maxText = 'Worse';
+            }
+
+            labels.innerHTML = `
+                <span>${minText}: ${minLabel}</span>
+                <span>${maxText}: ${maxLabel}</span>
+            `;
+        }
+
+        function highlightSubmarket(submarket) {
+            const marker = submarketMarkers.find(m => m.subData.zipCode === submarket.zipCode);
+            if (marker) {
+                submarketMap.setView(marker.getLatLng(), 13);
+                marker.openPopup();
+            }
+        }
+
+
+        function backToMarket() {
+            document.getElementById('submarketResults').classList.remove('visible');
+            document.getElementById('marketResults').classList.add('visible');
+        }
+
+        function resetView() {
+            document.getElementById('marketResults').classList.remove('visible');
+            document.getElementById('submarketResults').classList.remove('visible');
+            document.getElementById('comparisonResults').classList.remove('visible');
+            document.getElementById('propertyAnalysisResults').classList.remove('visible');
+            document.getElementById('citySelect').value = '';
+            currentMarket = null;
+            currentSubmarkets = null;
+        }
+
+        function showPropertyAnalysis() {
+            document.getElementById('marketResults').classList.remove('visible');
+            document.getElementById('submarketResults').classList.remove('visible');
+            document.getElementById('comparisonResults').classList.remove('visible');
+            document.getElementById('propertyAnalysisResults').classList.add('visible');
+        }
+
+        function switchRentalType(type) {
+            if (type === 'longTerm') {
+                document.getElementById('longTermBtn').classList.add('active');
+                document.getElementById('shortTermBtn').classList.remove('active');
+                document.getElementById('longTermCalculator').style.display = 'block';
+                document.getElementById('shortTermCalculator').style.display = 'none';
+            } else {
+                document.getElementById('longTermBtn').classList.remove('active');
+                document.getElementById('shortTermBtn').classList.add('active');
+                document.getElementById('longTermCalculator').style.display = 'none';
+                document.getElementById('shortTermCalculator').style.display = 'block';
+            }
+        }
+
+        // Store monthly rent globally
+        let estimatedMonthlyRent = 0;
+
+        // Toggle between IRR and Cash on Cash return metric
+        function toggleReturnMetric() {
+            const metric = document.querySelector('input[name="returnMetric"]:checked').value;
+            const label = document.getElementById('targetReturnLabel');
+            const displayMetric = document.getElementById('displayMetricType');
+            const irrAssumption = document.getElementById('irrAssumption');
+
+            if (metric === 'irr') {
+                label.textContent = 'Target Yield %:';
+                displayMetric.textContent = 'IRR';
+                irrAssumption.style.display = 'block';
+            } else {
+                label.textContent = 'Target Yield %:';
+                displayMetric.textContent = 'Cash on Cash';
+                irrAssumption.style.display = 'none';
+            }
+        }
+
+        // Toggle ARM options visibility
+        function toggleARMOptions() {
+            const loanType = document.getElementById('ltLoanType').value;
+            const fixedOptions = document.getElementById('fixedRateOptions');
+            const armOptions = document.getElementById('armOptions');
+
+            if (loanType === 'arm') {
+                fixedOptions.style.display = 'none';
+                armOptions.style.display = 'block';
+            } else {
+                fixedOptions.style.display = 'block';
+                armOptions.style.display = 'none';
+            }
+        }
+
+        // Toggle prepayment penalty details
+        function togglePrepaymentDetails() {
+            const prepaymentType = document.getElementById('ltPrepayment').value;
+            const prepaymentDetails = document.getElementById('prepaymentDetails');
+
+            if (prepaymentType !== 'none') {
+                prepaymentDetails.style.display = 'block';
+            } else {
+                prepaymentDetails.style.display = 'none';
+            }
+        }
+
+        // Toggle financing options visibility
+        function toggleFinancingOptions() {
+            const financingType = document.querySelector('input[name="financingType"]:checked').value;
+            const financingOptions = document.getElementById('financingOptions');
+
+            if (financingType === 'cash') {
+                financingOptions.style.display = 'none';
+            } else {
+                financingOptions.style.display = 'block';
+            }
+        }
+
+        function calculateQuickMaxPrice() {
+            const monthlyRent = parseFloat(document.getElementById('ltMonthlyRent').value) || 0;
+            const targetReturn = parseFloat(document.getElementById('ltTargetReturn').value) || 12;
+            const city = document.getElementById('ltCity').value;
+            const metric = document.querySelector('input[name="returnMetric"]:checked').value;
+
+            if (!monthlyRent) {
+                alert('Please enter the monthly rent from Rentcast.io');
+                return;
+            }
+
+            estimatedMonthlyRent = monthlyRent;
+
+            // Calculate annual rent with vacancy
+            const annualRentGross = monthlyRent * 12;
+            const annualRentAdjusted = annualRentGross * 0.95; // 5% vacancy
+
+            // Standard assumptions
+            const downPaymentPct = 0.20;
+            const interestRate = 0.07;
+            const loanTerm = 30;
+            const appreciationRate = 0.03; // 3% annual appreciation for IRR
+            const holdingPeriod = 5; // 5-year hold for IRR
+            const sellingCostsPct = 0.08; // 8% selling costs (6% commission + 2% closing)
+
+            // Tax rates by city
+            const getTaxRate = (city) => {
+                const rates = {
+                    'Nashville': 0.0068,
+                    'Memphis': 0.0196,
+                    'Knoxville': 0.0072,
+                    'Other': 0.01
+                };
+                return rates[city] || 0.01;
+            };
+
+            // Helper function to calculate IRR
+            const calculateIRR = (purchasePrice) => {
+                const downPayment = purchasePrice * downPaymentPct;
+                const loanAmount = purchasePrice * (1 - downPaymentPct);
+                const monthlyRate = interestRate / 12;
+                const numPayments = loanTerm * 12;
+                const monthlyPayment = (loanAmount * monthlyRate * Math.pow(1 + monthlyRate, numPayments)) /
+                                      (Math.pow(1 + monthlyRate, numPayments) - 1);
+
+                // Annual cash flow
+                const propertyTax = purchasePrice * getTaxRate(city);
+                const insurance = 1200;
+                const capex = purchasePrice * 0.01;
+                const maintenance = purchasePrice * 0.01;
+                const annualMortgage = monthlyPayment * 12;
+                const totalExpenses = propertyTax + insurance + capex + maintenance + annualMortgage;
+                const annualCashFlow = annualRentAdjusted - totalExpenses;
+
+                // Calculate sale proceeds after 5 years
+                const futureValue = purchasePrice * Math.pow(1 + appreciationRate, holdingPeriod);
+                const sellingCosts = futureValue * sellingCostsPct;
+
+                // Calculate remaining loan balance after 5 years
+                const paymentsRemaining = numPayments - (holdingPeriod * 12);
+                const loanBalance = (loanAmount * (Math.pow(1 + monthlyRate, numPayments) - Math.pow(1 + monthlyRate, holdingPeriod * 12))) /
+                                   (Math.pow(1 + monthlyRate, numPayments) - 1);
+                const saleProceeds = futureValue - sellingCosts - loanBalance;
+
+                // Binary search to find IRR (discount rate where NPV = 0)
+                let irrLow = -0.5;
+                let irrHigh = 1.0;
+                let irr = 0;
+
+                for (let j = 0; j < 50; j++) {
+                    const testRate = (irrLow + irrHigh) / 2;
+                    let npv = -downPayment; // Initial investment (negative)
+
+                    // Add discounted cash flows for years 1-4
+                    for (let year = 1; year < holdingPeriod; year++) {
+                        npv += annualCashFlow / Math.pow(1 + testRate, year);
+                    }
+
+                    // Add final year cash flow + sale proceeds
+                    npv += (annualCashFlow + saleProceeds) / Math.pow(1 + testRate, holdingPeriod);
+
+                    if (Math.abs(npv) < 1) {
+                        irr = testRate;
+                        break;
+                    } else if (npv > 0) {
+                        irrLow = testRate;
+                    } else {
+                        irrHigh = testRate;
+                    }
+                    irr = testRate;
+                }
+
+                return irr * 100; // Return as percentage
+            };
+
+            // Helper function to calculate Cash on Cash
+            const calculateCoC = (purchasePrice) => {
+                const downPayment = purchasePrice * downPaymentPct;
+                const loanAmount = purchasePrice * (1 - downPaymentPct);
+                const monthlyRate = interestRate / 12;
+                const numPayments = loanTerm * 12;
+                const monthlyPayment = (loanAmount * monthlyRate * Math.pow(1 + monthlyRate, numPayments)) /
+                                      (Math.pow(1 + monthlyRate, numPayments) - 1);
+                const annualMortgage = monthlyPayment * 12;
+
+                const propertyTax = purchasePrice * getTaxRate(city);
+                const insurance = 1200;
+                const capex = purchasePrice * 0.01;
+                const maintenance = purchasePrice * 0.01;
+
+                const totalExpenses = propertyTax + insurance + capex + maintenance + annualMortgage;
+                const cashFlow = annualRentAdjusted - totalExpenses;
+                return (cashFlow / downPayment) * 100;
+            };
+
+            // Binary search for max price
+            let low = 50000;
+            let high = annualRentAdjusted * 30;
+            let maxPrice = 0;
+
+            for (let i = 0; i < 100; i++) {
+                const mid = (low + high) / 2;
+
+                const actualReturn = metric === 'irr' ? calculateIRR(mid) : calculateCoC(mid);
+
+                if (Math.abs(actualReturn - targetReturn) < 0.1) {
+                    maxPrice = mid;
+                    break;
+                } else if (actualReturn > targetReturn) {
+                    low = mid;
+                    maxPrice = mid;
+                } else {
+                    high = mid;
+                }
+            }
+
+            maxPrice = Math.round(maxPrice / 1000) * 1000; // Round to nearest $1000
+
+            // Display results
+            document.getElementById('calculatedMaxPrice').textContent = '$' + maxPrice.toLocaleString();
+            document.getElementById('displayTargetReturn').textContent = targetReturn.toFixed(1);
+            document.getElementById('displayMonthlyRent').textContent = monthlyRent.toLocaleString();
+
+            // Show results
+            document.getElementById('quickResults').style.display = 'block';
+            document.getElementById('quickResults').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function showDetailedAnalysis() {
+            document.getElementById('detailedAnalysisSection').style.display = 'block';
+            document.getElementById('detailedAnalysisSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function calculateDetailedReturns() {
+            const purchasePrice = parseFloat(document.getElementById('ltPurchasePrice').value) || 0;
+            const vacancyRate = parseFloat(document.getElementById('ltVacancy').value) || 5;
+            const insurance = parseFloat(document.getElementById('ltInsurance').value) || 1200;
+            const hoaMonthly = parseFloat(document.getElementById('ltHOA').value) || 0;
+            const financingType = document.querySelector('input[name="financingType"]:checked').value;
+
+            const city = document.getElementById('ltCity').value;
+
+            if (!purchasePrice || !estimatedMonthlyRent) {
+                alert('Please estimate rent first, then enter purchase price');
+                return;
+            }
+
+            // Get or calculate expenses
+            const propertyTaxInput = parseFloat(document.getElementById('ltPropertyTax').value);
+            const capexInput = parseFloat(document.getElementById('ltCapex').value);
+            const maintenanceInput = parseFloat(document.getElementById('ltMaintenance').value);
+
+            // Auto-calculate if not provided
+            const getTaxRate = (city) => {
+                const rates = {'Nashville': 0.0068, 'Memphis': 0.0196, 'Knoxville': 0.0072};
+                return rates[city] || 0.01;
+            };
+
+            const propertyTax = propertyTaxInput || (purchasePrice * getTaxRate(city));
+            const capex = capexInput || (purchasePrice * 0.01);
+            const maintenance = maintenanceInput || (purchasePrice * 0.01);
+
+            // Calculate financing
+            let downPayment, loanAmount, monthlyPayment = 0, annualMortgage = 0;
+            let loanDetails = '';
+            let prepaymentInfo = '';
+
+            if (financingType === 'cash') {
+                // Cash purchase - no financing
+                downPayment = purchasePrice;
+                loanAmount = 0;
+                monthlyPayment = 0;
+                annualMortgage = 0;
+                loanDetails = 'Cash Purchase - No Financing';
+            } else {
+                // Financed purchase
+                const downPaymentPct = parseFloat(document.getElementById('ltDownPayment').value) || 20;
+                const amortization = parseFloat(document.getElementById('ltAmortization').value) || 30;
+                const loanType = document.getElementById('ltLoanType').value;
+                const paymentFreq = document.getElementById('ltPaymentFreq').value;
+
+                downPayment = purchasePrice * (downPaymentPct / 100);
+                loanAmount = purchasePrice - downPayment;
+
+                let interestRate = 0;
+
+                if (loanType === 'arm') {
+                    // ARM calculation
+                    const armType = document.getElementById('ltARMType').value;
+                    const initialRate = parseFloat(document.getElementById('ltInitialRate').value) || 5.5;
+                    const armIndex = document.getElementById('ltARMIndex').value;
+                    const margin = parseFloat(document.getElementById('ltARMMargin').value) || 2.25;
+                    const capInitial = parseFloat(document.getElementById('ltARMCapInitial').value) || 2;
+                    const capPeriodic = parseFloat(document.getElementById('ltARMCapPeriodic').value) || 2;
+                    const capLifetime = parseFloat(document.getElementById('ltARMCapLifetime').value) || 5;
+                    const floor = parseFloat(document.getElementById('ltARMFloor').value) || 0;
+
+                    interestRate = initialRate;
+                    const monthlyRate = (initialRate / 100) / 12;
+                    const numPayments = amortization * 12;
+                    monthlyPayment = loanAmount > 0 ?
+                        (loanAmount * monthlyRate * Math.pow(1 + monthlyRate, numPayments)) /
+                        (Math.pow(1 + monthlyRate, numPayments) - 1) : 0;
+
+                    const fixedPeriod = armType.split('/')[0];
+                    loanDetails = `${armType} ARM - Initial rate: ${initialRate.toFixed(2)}% (fixed for ${fixedPeriod} years)<br>` +
+                                 `After year ${fixedPeriod}: ${armIndex.toUpperCase()} + ${margin}% margin<br>` +
+                                 `Rate caps: ${capInitial}% / ${capPeriodic}% / ${capLifetime}%` +
+                                 (floor > 0 ? ` | Floor: ${floor}%` : '');
+                } else {
+                    // Fixed rate calculation
+                    const fixedRate = parseFloat(document.getElementById('ltFixedRate').value) || 7;
+                    interestRate = fixedRate;
+                    const monthlyRate = (fixedRate / 100) / 12;
+                    const numPayments = amortization * 12;
+                    monthlyPayment = loanAmount > 0 ?
+                        (loanAmount * monthlyRate * Math.pow(1 + monthlyRate, numPayments)) /
+                        (Math.pow(1 + monthlyRate, numPayments) - 1) : 0;
+
+                    loanDetails = `Fixed Rate: ${fixedRate.toFixed(2)}% | ${amortization}-year amortization`;
+                }
+
+                // Adjust for payment frequency
+                if (paymentFreq === 'biweekly') {
+                    // Bi-weekly payments (26 per year)
+                    const biweeklyPayment = monthlyPayment / 2;
+                    annualMortgage = biweeklyPayment * 26;
+                    loanDetails += `<br>Bi-weekly payments: $${biweeklyPayment.toLocaleString(undefined, {maximumFractionDigits: 2})} (26 payments/year)`;
+                } else {
+                    annualMortgage = monthlyPayment * 12;
+                }
+
+                // Prepayment penalty info
+                const prepaymentType = document.getElementById('ltPrepayment').value;
+                if (prepaymentType !== 'none') {
+                    const prepaymentPct = parseFloat(document.getElementById('ltPrepaymentPct').value) || 2;
+                    const prepaymentYears = parseFloat(document.getElementById('ltPrepaymentYears').value) || 3;
+                    const penaltyAmount = loanAmount * (prepaymentPct / 100);
+                    prepaymentInfo = `<div style="margin-top: 10px; padding: 10px; background: #fff3cd; border-left: 4px solid #ffc107; font-size: 13px;">` +
+                                    `<strong>⚠️ Prepayment Penalty (${prepaymentType}):</strong><br>` +
+                                    `${prepaymentPct}% of loan balance (~$${penaltyAmount.toLocaleString(undefined, {maximumFractionDigits: 0})}) if prepaid within ${prepaymentYears} years` +
+                                    `</div>`;
+                }
+            }
+
+            // Calculate income
+            const monthlyRent = estimatedMonthlyRent;
+            const annualRentGross = monthlyRent * 12;
+            const annualRentAdjusted = annualRentGross * (1 - vacancyRate / 100);
+
+            // Calculate expenses
+            const annualHOA = hoaMonthly * 12;
+            const totalAnnualExpenses = propertyTax + insurance + annualHOA + capex + maintenance + annualMortgage;
+            const totalMonthlyExpenses = totalAnnualExpenses / 12;
+
+            // Calculate NOI and cash flow
+            const noi = annualRentAdjusted - (propertyTax + insurance + annualHOA + capex + maintenance);
+            const annualCashFlow = annualRentAdjusted - totalAnnualExpenses;
+            const monthlyCashFlow = annualCashFlow / 12;
+
+            // Calculate returns
+            const cashOnCash = downPayment > 0 ? (annualCashFlow / downPayment) * 100 : 0;
+            const capRate = purchasePrice > 0 ? (noi / purchasePrice) * 100 : 0;
+
+            // Display results
+            document.getElementById('ltDownPaymentAmount').textContent = '$' + downPayment.toLocaleString(undefined, {maximumFractionDigits: 0});
+            document.getElementById('ltLoanAmount').textContent = '$' + loanAmount.toLocaleString(undefined, {maximumFractionDigits: 0});
+            document.getElementById('ltMonthlyPayment').textContent = '$' + monthlyPayment.toLocaleString(undefined, {maximumFractionDigits: 2});
+            document.getElementById('ltTotalMonthly').textContent = '$' + totalMonthlyExpenses.toLocaleString(undefined, {maximumFractionDigits: 2});
+            document.getElementById('ltMonthlyCashFlow').textContent = '$' + monthlyCashFlow.toLocaleString(undefined, {maximumFractionDigits: 2});
+            document.getElementById('ltNOI').textContent = '$' + noi.toLocaleString(undefined, {maximumFractionDigits: 0});
+            document.getElementById('ltCashOnCash').textContent = cashOnCash.toFixed(2) + '%';
+            document.getElementById('ltCapRate').textContent = capRate.toFixed(2) + '%';
+
+            // Display loan details
+            const loanDetailsDiv = document.getElementById('loanDetailsDisplay');
+            if (loanDetailsDiv) {
+                loanDetailsDiv.innerHTML = `<div style="padding: 15px; background: #f8f9fa; border-radius: 8px; font-size: 14px; line-height: 1.8;">` +
+                                          `<strong>Loan Details:</strong><br>${loanDetails}` +
+                                          `</div>` + prepaymentInfo;
+            }
+
+            // Show results
+            document.getElementById('detailedResults').style.display = 'block';
+            document.getElementById('detailedResults').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function calculateMaxPrice() {
+            const targetYield = parseFloat(document.getElementById('ltTargetYield').value) || 0;
+
+            if (!targetYield) {
+                alert('Please enter a target Cash on Cash return');
+                return;
+            }
+
+            if (!estimatedMonthlyRent) {
+                alert('Please estimate rent first');
+                return;
+            }
+
+            // Get all inputs
+            const downPaymentPct = parseFloat(document.getElementById('ltDownPayment').value) || 20;
+            const interestRate = parseFloat(document.getElementById('ltInterestRate').value) || 7;
+            const loanTerm = parseFloat(document.getElementById('ltLoanTerm').value) || 30;
+            const vacancyRate = parseFloat(document.getElementById('ltVacancy').value) || 5;
+            const insurance = parseFloat(document.getElementById('ltInsurance').value) || 1200;
+            const hoaMonthly = parseFloat(document.getElementById('ltHOA').value) || 0;
+            const city = document.getElementById('ltCity').value;
+
+            const getTaxRate = (city) => {
+                const rates = {'Nashville': 0.0068, 'Memphis': 0.0196, 'Knoxville': 0.0072};
+                return rates[city] || 0.01;
+            };
+
+            // Binary search to find maximum purchase price
+            let low = 50000;
+            let high = estimatedMonthlyRent * 12 * 30;
+            let maxPrice = 0;
+
+            for (let i = 0; i < 100; i++) {
+                const mid = (low + high) / 2;
+                const downPayment = mid * (downPaymentPct / 100);
+                const loanAmount = mid * (1 - downPaymentPct / 100);
+                const monthlyRate = (interestRate / 100) / 12;
+                const numPayments = loanTerm * 12;
+                const monthlyPayment = (loanAmount * monthlyRate * Math.pow(1 + monthlyRate, numPayments)) /
+                                      (Math.pow(1 + monthlyRate, numPayments) - 1);
+
+                const annualRent = estimatedMonthlyRent * 12;
+                const adjustedRent = annualRent * (1 - vacancyRate / 100);
+                const annualHOA = hoaMonthly * 12;
+                const annualMortgage = monthlyPayment * 12;
+
+                const propertyTax = mid * getTaxRate(city);
+                const capex = mid * 0.01;
+                const maintenance = mid * 0.01;
+
+                const totalExpenses = propertyTax + insurance + annualHOA + capex + maintenance + annualMortgage;
+                const cashFlow = adjustedRent - totalExpenses;
+                const cashOnCash = (cashFlow / downPayment) * 100;
+
+                if (Math.abs(cashOnCash - targetYield) < 0.1) {
+                    maxPrice = mid;
+                    break;
+                } else if (cashOnCash > targetYield) {
+                    low = mid;
+                    maxPrice = mid;
+                } else {
+                    high = mid;
+                }
+            }
+
+            document.getElementById('ltMaxPrice').textContent = '$' + Math.round(maxPrice).toLocaleString();
+        }
+
+        function showLoading() {
+            document.getElementById('loading').style.display = 'block';
+        }
+
+        function hideLoading() {
+            document.getElementById('loading').style.display = 'none';
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('error');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+
+        function hideError() {
+            document.getElementById('error').style.display = 'none';
+        }
+
+        // Bookmark Management
+        function loadBookmarks() {
+            const saved = localStorage.getItem('bookmarkedMarkets');
+            if (saved) {
+                bookmarkedMarkets = JSON.parse(saved);
+                const savedData = localStorage.getItem('bookmarkedData');
+                if (savedData) {
+                    bookmarkedData = JSON.parse(savedData);
+                }
+                updateBookmarksDisplay();
+            }
+        }
+
+        function saveBookmarks() {
+            localStorage.setItem('bookmarkedMarkets', JSON.stringify(bookmarkedMarkets));
+            localStorage.setItem('bookmarkedData', JSON.stringify(bookmarkedData));
+        }
+
+        function toggleBookmark() {
+            if (!currentMarket) return;
+
+            const cityName = currentMarket.name;
+            const index = bookmarkedMarkets.indexOf(cityName);
+
+            if (index > -1) {
+                // Remove bookmark
+                bookmarkedMarkets.splice(index, 1);
+                delete bookmarkedData[cityName];
+            } else {
+                // Add bookmark
+                bookmarkedMarkets.push(cityName);
+                bookmarkedData[cityName] = currentMarket;
+            }
+
+            saveBookmarks();
+            updateBookmarksDisplay();
+            updateBookmarkButton();
+        }
+
+        function updateBookmarkButton() {
+            if (!currentMarket) return;
+
+            const btn = document.getElementById('bookmarkBtn');
+            const isBookmarked = bookmarkedMarkets.includes(currentMarket.name);
+
+            if (isBookmarked) {
+                btn.textContent = '★ Bookmarked';
+                btn.classList.add('bookmarked');
+            } else {
+                btn.textContent = '☆ Bookmark';
+                btn.classList.remove('bookmarked');
+            }
+        }
+
+        function updateBookmarksDisplay() {
+            const panel = document.getElementById('bookmarksPanel');
+            const list = document.getElementById('bookmarksList');
+            const compareBtn = document.getElementById('compareButton');
+
+            if (bookmarkedMarkets.length === 0) {
+                panel.style.display = 'none';
+                return;
+            }
+
+            panel.style.display = 'block';
+            list.innerHTML = '';
+
+            bookmarkedMarkets.forEach(city => {
+                const chip = document.createElement('div');
+                chip.className = 'bookmark-chip';
+                chip.innerHTML = `
+                    <span>${city}</span>
+                    <span class="remove-btn" onclick="removeBookmark('${city}')" title="Remove">×</span>
+                `;
+                list.appendChild(chip);
+            });
+
+            // Show compare button if 2+ bookmarks
+            compareBtn.style.display = bookmarkedMarkets.length >= 2 ? 'block' : 'none';
+        }
+
+        function removeBookmark(cityName) {
+            const index = bookmarkedMarkets.indexOf(cityName);
+            if (index > -1) {
+                bookmarkedMarkets.splice(index, 1);
+                delete bookmarkedData[cityName];
+                saveBookmarks();
+                updateBookmarksDisplay();
+                updateBookmarkButton();
+            }
+        }
+
+        // Comparison View
+        async function showComparison() {
+            if (bookmarkedMarkets.length < 2) {
+                alert('Please bookmark at least 2 markets to compare');
+                return;
+            }
+
+            showLoading();
+
+            try {
+                // Ensure we have fresh data for all bookmarked markets
+                for (const city of bookmarkedMarkets) {
+                    if (!bookmarkedData[city]) {
+                        const response = await fetch(`/api/markets/${city}`);
+                        const data = await response.json();
+                        if (data.success) {
+                            bookmarkedData[city] = data.market;
+                        }
+                    }
+                }
+
+                saveBookmarks();
+                displayComparison();
+
+                // Hide other views
+                document.getElementById('marketResults').classList.remove('visible');
+                document.getElementById('submarketResults').classList.remove('visible');
+                document.getElementById('comparisonResults').classList.add('visible');
+            } catch (error) {
+                showError('Failed to load comparison data');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function displayComparison() {
+            const container = document.getElementById('compareContainer');
+            container.innerHTML = '';
+
+            // Create comparison cards for each market
+            bookmarkedMarkets.forEach(city => {
+                const market = bookmarkedData[city];
+                if (!market) return;
+
+                const card = document.createElement('div');
+                card.className = 'compare-card';
+                card.innerHTML = `
+                    <h4>${market.name}, ${market.state}</h4>
+                    <div class="compare-metric">
+                        <span class="compare-metric-label">Population</span>
+                        <span class="compare-metric-value">${market.current.population.toLocaleString()}</span>
+                    </div>
+                    <div class="compare-metric">
+                        <span class="compare-metric-label">Median Income</span>
+                        <span class="compare-metric-value">$${market.current.medianIncome.toLocaleString()}</span>
+                    </div>
+                    <div class="compare-metric">
+                        <span class="compare-metric-label">Median Home Value</span>
+                        <span class="compare-metric-value">$${market.current.medianHomeValue.toLocaleString()}</span>
+                    </div>
+                    <div class="compare-metric">
+                        <span class="compare-metric-label">Median Rent</span>
+                        <span class="compare-metric-value">$${market.current.medianRent.toLocaleString()}</span>
+                    </div>
+                    <div class="compare-metric">
+                        <span class="compare-metric-label">Property Tax</span>
+                        <span class="compare-metric-value">${market.current.propertyTaxRate}%</span>
+                    </div>
+                    <div class="compare-metric">
+                        <span class="compare-metric-label">Rent-to-Value</span>
+                        <span class="compare-metric-value">${market.current.rentToValueRatio}%</span>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+
+            // Draw comparison charts
+            setTimeout(() => {
+                drawComparisonChart('comparePopulationChart', 'population', 'Population');
+                drawComparisonChart('compareIncomeChart', 'medianIncome', 'Median Income', true);
+                drawComparisonChart('compareHomeValueChart', 'medianHomeValue', 'Home Value', true);
+            }, 100);
+        }
+
+        function drawComparisonChart(canvasId, field, label, isDollar = false) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return;
+
+            const ctx = canvas.getContext('2d');
+            const container = canvas.parentElement;
+            const containerWidth = container.offsetWidth - 50;
+
+            canvas.width = containerWidth > 0 ? containerWidth : 800;
+            canvas.height = 300;
+
+            const width = canvas.width;
+            const height = canvas.height;
+            const padding = 80;
+            const chartWidth = width - 2 * padding;
+            const chartHeight = height - 2 * padding;
+
+            ctx.clearRect(0, 0, width, height);
+
+            // Collect all data points from all markets
+            const allYears = new Set();
+            const marketData = {};
+
+            bookmarkedMarkets.forEach(city => {
+                const market = bookmarkedData[city];
+                if (!market || !market.historical) return;
+
+                marketData[city] = {};
+                market.historical.forEach(h => {
+                    allYears.add(h.year);
+                    marketData[city][h.year] = h[field];
+                });
+            });
+
+            const years = Array.from(allYears).sort();
+            if (years.length === 0) return;
+
+            // Find min/max for scaling
+            let allValues = [];
+            Object.values(marketData).forEach(yearData => {
+                allValues = allValues.concat(Object.values(yearData));
+            });
+
+            const minValue = Math.min(...allValues) * 0.9;
+            const maxValue = Math.max(...allValues) * 1.1;
+
+            // Draw axes
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(padding, padding);
+            ctx.lineTo(padding, height - padding);
+            ctx.lineTo(width - padding, height - padding);
+            ctx.stroke();
+
+            // Colors for different cities
+            const colors = ['#764ba2', '#f093fb', '#4facfe', '#00f2fe', '#43e97b', '#fa709a'];
+
+            // Draw lines for each market
+            bookmarkedMarkets.forEach((city, cityIndex) => {
+                const data = marketData[city];
+                if (!data) return;
+
+                const color = colors[cityIndex % colors.length];
+                ctx.strokeStyle = color;
+                ctx.fillStyle = color;
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+
+                let firstPoint = true;
+                years.forEach((year, yearIndex) => {
+                    const value = data[year];
+                    if (value === undefined) return;
+
+                    const x = padding + (yearIndex / (years.length - 1)) * chartWidth;
+                    const y = height - padding - ((value - minValue) / (maxValue - minValue)) * chartHeight;
+
+                    if (firstPoint) {
+                        ctx.moveTo(x, y);
+                        firstPoint = false;
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+
+                    // Draw point
+                    ctx.beginPath();
+                    ctx.arc(x, y, 4, 0, 2 * Math.PI);
+                    ctx.fill();
+                    ctx.beginPath();
+                });
+
+                ctx.stroke();
+            });
+
+            // Draw legend
+            ctx.font = '12px sans-serif';
+            bookmarkedMarkets.forEach((city, index) => {
+                const color = colors[index % colors.length];
+                const x = padding;
+                const y = 20 + index * 20;
+
+                ctx.fillStyle = color;
+                ctx.fillRect(x, y - 10, 15, 15);
+
+                ctx.fillStyle = '#333';
+                ctx.textAlign = 'left';
+                ctx.fillText(city, x + 20, y);
+            });
+
+            // X-axis labels
+            ctx.fillStyle = '#333';
+            ctx.textAlign = 'center';
+            years.forEach((year, index) => {
+                if (index % Math.ceil(years.length / 6) === 0) {
+                    const x = padding + (index / (years.length - 1)) * chartWidth;
+                    ctx.fillText(year, x, height - padding + 20);
+                }
+            });
+
+            // Y-axis labels
+            const ySteps = 5;
+            ctx.textAlign = 'right';
+            for (let i = 0; i <= ySteps; i++) {
+                const value = minValue + (i / ySteps) * (maxValue - minValue);
+                const y = height - padding - (i / ySteps) * chartHeight;
+                const displayValue = isDollar ? '$' + Math.round(value).toLocaleString() : Math.round(value).toLocaleString();
+                ctx.fillText(displayValue, padding - 10, y + 4);
+            }
+        }
+
+        // Initialize
+        loadMarkets();
+        loadBookmarks();
+    </script>
+</body>
+</html>
