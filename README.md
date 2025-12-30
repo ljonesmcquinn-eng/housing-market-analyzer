@@ -27,6 +27,27 @@ A web application for analyzing real estate markets with comprehensive demograph
 - **Color-coded legends** to distinguish between cities
 - Saved in browser (persists across sessions)
 
+### Property Investment Analysis
+- **Long-term rental analysis** with Rentcast.io integration
+- **IRR (Internal Rate of Return)** calculation with 5-year holding period
+- **Cash on Cash Return** calculations
+- **Maximum purchase price calculator** based on target yields
+- **Comprehensive financing options:**
+  - Cash purchase vs. financing toggle
+  - Fixed rate mortgages
+  - ARM (Adjustable Rate Mortgages) with 10+ types
+  - Custom amortization terms
+  - Bi-weekly payment options
+  - Prepayment penalty modeling
+- **Operating expense modeling:**
+  - Auto-calculated property tax by city
+  - Insurance, HOA, CapEx, and maintenance
+  - Vacancy rate adjustments
+- **Detailed cash flow analysis:**
+  - Monthly and annual projections
+  - NOI (Net Operating Income) calculations
+  - Cap rate calculations
+
 ### Prototype Markets
 Currently includes data for three Tennessee cities:
 - **Nashville** - 6 submarkets
@@ -293,21 +314,53 @@ The scraper includes a framework for scraping city-data.com:
 
 ## Deployment
 
-### Local Development
-Already configured! Just run `npm start`
+### Deploy to Render.com (Recommended - Free Tier Available)
 
-### Cloud Deployment
+This app is configured for one-click deployment to Render.com:
 
-#### Heroku
+1. **Push code to GitHub:**
+   ```bash
+   # Create a new repository on GitHub first, then:
+   git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPO_NAME.git
+   git push -u origin main
+   ```
+
+2. **Deploy on Render:**
+   - Go to [render.com](https://render.com) and sign up/log in
+   - Click **"New +"** → **"Web Service"**
+   - Connect your GitHub repository
+   - Render will auto-detect the configuration from `render.yaml`
+   - Click **"Create Web Service"**
+
+3. **Your site will be live at:**
+   ```
+   https://your-app-name.onrender.com
+   ```
+
+4. **Optional: Add custom domain:**
+   - Go to your service settings
+   - Add custom domain
+   - Update DNS records as instructed
+
+**Note:** Free tier sleeps after 15 minutes of inactivity. First request may take 30-60 seconds to wake up.
+
+### Alternative Deployment Options
+
+#### Railway (Free Tier)
 ```bash
-heroku create your-app-name
-git push heroku main
-```
+# Install Railway CLI
+npm install -g @railway/cli
 
-#### Railway
-```bash
+# Deploy
+railway login
 railway init
 railway up
+```
+
+#### Vercel (Edge Functions)
+```bash
+npm install -g vercel
+vercel
 ```
 
 #### DigitalOcean App Platform
@@ -315,7 +368,8 @@ railway up
 2. Auto-detect Node.js app
 3. Deploy
 
-**Note:** Database file will persist on some platforms but may require external database (PostgreSQL) for production use.
+### Local Development
+Already configured! Just run `npm start`
 
 ## Troubleshooting
 
