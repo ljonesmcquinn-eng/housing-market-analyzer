@@ -133,6 +133,7 @@ router.get('/threads/:id', async (req, res) => {
                 `SELECT
                     p.id,
                     p.content,
+                    p.like_count,
                     p.is_edited,
                     p.created_at,
                     p.updated_at,
@@ -148,6 +149,27 @@ router.get('/threads/:id', async (req, res) => {
                     else resolve(rows);
                 }
             );
+        });
+
+        // Check which posts the current user has liked (if logged in)
+        let likedPostIds = [];
+        if (req.session && req.session.userId) {
+            const liked = await new Promise((resolve, reject) => {
+                db.all(
+                    'SELECT post_id FROM post_likes WHERE user_id = ? AND post_id IN (' + posts.map(() => '?').join(',') + ')',
+                    [req.session.userId, ...posts.map(p => p.id)],
+                    (err, rows) => {
+                        if (err) reject(err);
+                        else resolve(rows);
+                    }
+                );
+            });
+            likedPostIds = liked.map(l => l.post_id);
+        }
+
+        // Add liked flag to posts
+        posts.forEach(post => {
+            post.liked_by_user = likedPostIds.includes(post.id);
         });
 
         // Increment view count
@@ -384,3 +406,235 @@ router.delete('/posts/:id', requireAuth, async (req, res) => {
 });
 
 module.exports = router;
+
+// POST /api/forum/posts/:id/like - Like a post
+router.post('/posts/:id/like', requireAuth, async (req, res) => {
+    try {
+        const postId = req.params.id;
+        const db = getDatabase();
+
+        // Check if already liked
+        const existing = await new Promise((resolve, reject) => {
+            db.get(
+                'SELECT id FROM post_likes WHERE post_id = ? AND user_id = ?',
+                [postId, req.session.userId],
+                (err, row) => {
+                    if (err) reject(err);
+                    else resolve(row);
+                }
+            );
+        });
+
+        if (existing) {
+            return res.status(400).json({
+                success: false,
+                error: 'Already liked'
+            });
+        }
+
+        // Add like
+        await new Promise((resolve, reject) => {
+            db.run(
+                'INSERT INTO post_likes (post_id, user_id) VALUES (?, ?)',
+                [postId, req.session.userId],
+                (err) => {
+                    if (err) reject(err);
+                    else resolve();
+                }
+            );
+        });
+
+        // Update like count
+        await new Promise((resolve, reject) => {
+            db.run(
+                'UPDATE forum_posts SET like_count = like_count + 1 WHERE id = ?',
+                [postId],
+                (err) => {
+                    if (err) reject(err);
+                    else resolve();
+                }
+            );
+        });
+
+        res.json({
+            success: true
+        });
+    } catch (error) {
+        console.error('Like post error:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Failed to like post'
+        });
+    }
+});
+
+// DELETE /api/forum/posts/:id/like - Unlike a post
+router.delete('/posts/:id/like', requireAuth, async (req, res) => {
+    try {
+        const postId = req.params.id;
+        const db = getDatabase();
+
+        // Delete like
+        const result = await new Promise((resolve, reject) => {
+            db.run(
+                'DELETE FROM post_likes WHERE post_id = ? AND user_id = ?',
+                [postId, req.session.userId],
+                function(err) {
+                    if (err) reject(err);
+                    else resolve(this);
+                }
+            );
+        });
+
+        if (result.changes === 0) {
+            return res.status(400).json({
+                success: false,
+                error: 'Not liked'
+            });
+        }
+
+        // Update like count
+        await new Promise((resolve, reject) => {
+            db.run(
+                'UPDATE forum_posts SET like_count = like_count - 1 WHERE id = ?',
+                [postId],
+                (err) => {
+                    if (err) reject(err);
+                    else resolve();
+                }
+            );
+        });
+
+        res.json({
+            success: true
+        });
+    } catch (error) {
+        console.error('Unlike post error:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Failed to unlike post'
+        });
+    }
+});
+
+// GET /api/forum/user/:id/posts - Get user's posts and threads
+router.get('/user/:id/posts', async (req, res) => {
+    try {
+        const db = getDatabase();
+        const userId = req.params.id;
+
+        // Get threads created by user
+        const threads = await new Promise((resolve, reject) => {
+            db.all(
+                `SELECT
+                    t.id,
+                    t.title,
+                    t.created_at,
+                    c.name as category_name,
+                    COUNT(p.id) as reply_count
+                FROM forum_threads t
+                JOIN forum_categories c ON t.category_id = c.id
+                LEFT JOIN forum_posts p ON t.id = p.thread_id
+                WHERE t.user_id = ?
+                GROUP BY t.id
+                ORDER BY t.created_at DESC`,
+                [userId],
+                (err, rows) => {
+                    if (err) reject(err);
+                    else resolve(rows);
+                }
+            );
+        });
+
+        // Get posts/replies by user
+        const posts = await new Promise((resolve, reject) => {
+            db.all(
+                `SELECT
+                    p.id,
+                    p.content,
+                    p.like_count,
+                    p.created_at,
+                    t.id as thread_id,
+                    t.title as thread_title,
+                    c.name as category_name
+                FROM forum_posts p
+                JOIN forum_threads t ON p.thread_id = t.id
+                JOIN forum_categories c ON t.category_id = c.id
+                WHERE p.user_id = ?
+                ORDER BY p.created_at DESC`,
+                [userId],
+                (err, rows) => {
+                    if (err) reject(err);
+                    else resolve(rows);
+                }
+            );
+        });
+
+        res.json({
+            success: true,
+            threads,
+            posts
+        });
+    } catch (error) {
+        console.error('Get user posts error:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Failed to get user posts'
+        });
+    }
+});
+
+// GET /api/forum/user/:id/liked - Get posts liked by user
+router.get('/user/:id/liked', requireAuth, async (req, res) => {
+    try {
+        const db = getDatabase();
+        const userId = req.params.id;
+
+        // Only allow users to see their own liked posts
+        if (parseInt(userId) !== req.session.userId) {
+            return res.status(403).json({
+                success: false,
+                error: 'Forbidden'
+            });
+        }
+
+        const likedPosts = await new Promise((resolve, reject) => {
+            db.all(
+                `SELECT
+                    p.id,
+                    p.content,
+                    p.like_count,
+                    p.created_at,
+                    u.username as author,
+                    t.id as thread_id,
+                    t.title as thread_title,
+                    c.name as category_name,
+                    pl.created_at as liked_at
+                FROM post_likes pl
+                JOIN forum_posts p ON pl.post_id = p.id
+                JOIN users u ON p.user_id = u.id
+                JOIN forum_threads t ON p.thread_id = t.id
+                JOIN forum_categories c ON t.category_id = c.id
+                WHERE pl.user_id = ?
+                ORDER BY pl.created_at DESC`,
+                [userId],
+                (err, rows) => {
+                    if (err) reject(err);
+                    else resolve(rows);
+                }
+            );
+        });
+
+        res.json({
+            success: true,
+            posts: likedPosts
+        });
+    } catch (error) {
+        console.error('Get liked posts error:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Failed to get liked posts'
+        });
+    }
+});
+

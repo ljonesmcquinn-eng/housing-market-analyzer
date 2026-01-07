@@ -62,6 +62,9 @@ CREATE TABLE IF NOT EXISTS users (
     username TEXT NOT NULL UNIQUE,
     email TEXT NOT NULL UNIQUE,
     password_hash TEXT NOT NULL,
+    name TEXT,
+    bio TEXT,
+    avatar_url TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     last_login DATETIME,
     is_active INTEGER DEFAULT 1
@@ -98,11 +101,23 @@ CREATE TABLE IF NOT EXISTS forum_posts (
     thread_id INTEGER NOT NULL,
     user_id INTEGER NOT NULL,
     content TEXT NOT NULL,
+    like_count INTEGER DEFAULT 0,
     is_edited INTEGER DEFAULT 0,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (thread_id) REFERENCES forum_threads(id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- Post likes table: tracks which users liked which posts
+CREATE TABLE IF NOT EXISTS post_likes (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    post_id INTEGER NOT NULL,
+    user_id INTEGER NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (post_id) REFERENCES forum_posts(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    UNIQUE(post_id, user_id)
 );
 
 -- Create indexes for forum tables
@@ -112,6 +127,8 @@ CREATE INDEX IF NOT EXISTS idx_threads_category ON forum_threads(category_id);
 CREATE INDEX IF NOT EXISTS idx_threads_user ON forum_threads(user_id);
 CREATE INDEX IF NOT EXISTS idx_posts_thread ON forum_posts(thread_id);
 CREATE INDEX IF NOT EXISTS idx_posts_user ON forum_posts(user_id);
+CREATE INDEX IF NOT EXISTS idx_post_likes_post ON post_likes(post_id);
+CREATE INDEX IF NOT EXISTS idx_post_likes_user ON post_likes(user_id);
 
 -- Insert default forum categories
 INSERT OR IGNORE INTO forum_categories (id, name, description, icon, display_order) VALUES

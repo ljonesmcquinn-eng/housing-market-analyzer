@@ -170,14 +170,29 @@ async function showThread(threadId) {
                 const isFirstPost = index === 0;
                 const postDate = new Date(post.created_at).toLocaleString();
 
+                const likeButton = currentUser ? `
+                    <button class="like-btn ${post.liked_by_user ? 'liked' : ''}" onclick="toggleLike(${post.id}, this)">
+                        <span class="like-icon">${post.liked_by_user ? '❤️' : '🤍'}</span>
+                        <span class="like-count">${post.like_count || 0}</span>
+                    </button>
+                ` : `
+                    <div class="like-display">
+                        <span class="like-icon">❤️</span>
+                        <span class="like-count">${post.like_count || 0}</span>
+                    </div>
+                `;
+
+                const authorLink = `<a href="/profile.html?id=${post.author_id}" class="post-author">${post.author}${isFirstPost ? ' (OP)' : ''}</a>`;
+
                 postCard.innerHTML = `
                     <div class="post-header">
-                        <div>
-                            <div class="post-author">${post.author}${isFirstPost ? ' (OP)' : ''}</div>
-                        </div>
+                        <div>${authorLink}</div>
                         <div class="post-date">${postDate}</div>
                     </div>
                     <div class="post-content">${escapeHtml(post.content)}</div>
+                    <div class="post-actions">
+                        ${likeButton}
+                    </div>
                 `;
 
                 postsList.appendChild(postCard);
@@ -315,3 +330,58 @@ window.addEventListener('DOMContentLoaded', () => {
     checkAuth();
     loadCategories();
 });
+
+// Toggle profile dropdown
+function toggleProfileDropdown() {
+    const dropdown = document.getElementById('profileDropdown');
+    const button = document.querySelector('.profile-button');
+    
+    dropdown.classList.toggle('show');
+    button.classList.toggle('active');
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', (e) => {
+    const profileMenu = document.querySelector('.profile-menu');
+    const dropdown = document.getElementById('profileDropdown');
+    
+    if (profileMenu && !profileMenu.contains(e.target) && dropdown) {
+        dropdown.classList.remove('show');
+        document.querySelector('.profile-button')?.classList.remove('active');
+    }
+});
+
+// Toggle like on a post
+async function toggleLike(postId, button) {
+    try {
+        const isLiked = button.classList.contains('liked');
+        const method = isLiked ? 'DELETE' : 'POST';
+        
+        const response = await fetch(`/api/forum/posts/${postId}/like`, {
+            method,
+            credentials: 'include'
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            // Update button state
+            button.classList.toggle('liked');
+            
+            const icon = button.querySelector('.like-icon');
+            const count = button.querySelector('.like-count');
+            
+            if (isLiked) {
+                icon.textContent = '🤍';
+                count.textContent = parseInt(count.textContent) - 1;
+            } else {
+                icon.textContent = '❤️';
+                count.textContent = parseInt(count.textContent) + 1;
+            }
+        } else {
+            console.error('Like toggle failed:', data.error);
+        }
+    } catch (error) {
+        console.error('Error toggling like:', error);
+    }
+}

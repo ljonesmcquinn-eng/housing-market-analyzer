@@ -17,9 +17,18 @@
                     <a href="/login.html" class="btn-secondary">Log In</a>
                     <a href="/signup.html" class="btn-primary">Sign Up</a>
                 </div>
-                <div id="userMenu" style="display: none;">
-                    <span id="usernameDisplay"></span>
-                    <button onclick="logout()" class="btn-secondary">Log Out</button>
+                <div id="userMenu" class="profile-menu" style="display: none;">
+                    <button class="profile-button" onclick="toggleProfileDropdown()">
+                        <span id="usernameDisplay"></span>
+                        <span class="dropdown-arrow">▼</span>
+                    </button>
+                    <div id="profileDropdown" class="dropdown-menu">
+                        <a href="/dashboard.html" class="dropdown-item">📊 My Dashboard</a>
+                        <a href="/saved.html" class="dropdown-item">❤️ Saved Content</a>
+                        <a href="/settings.html" class="dropdown-item">⚙️ Settings</a>
+                        <div class="dropdown-divider"></div>
+                        <a href="#" onclick="logout(); return false;" class="dropdown-item">🚪 Log Out</a>
+                    </div>
                 </div>
             </div>
         </div>
