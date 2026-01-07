@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forums - Housing Market Analyzer</title>
+    <link rel="stylesheet" href="forums-style.css">
+</head>
+<body>
+    <div class="navbar">
+        <div class="nav-content">
+            <a href="/" class="logo">Housing Market Analyzer</a>
+            <div class="nav-links">
+                <a href="/">Market Analysis</a>
+                <a href="/forums.html" class="active">Forums</a>
+                <div id="authButtons">
+                    <a href="/login.html" class="btn-secondary">Log In</a>
+                    <a href="/signup.html" class="btn-primary">Sign Up</a>
+                </div>
+                <div id="userMenu" style="display: none;">
+                    <span id="usernameDisplay"></span>
+                    <button onclick="logout()" class="btn-secondary">Log Out</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Categories View -->
+        <div id="categoriesView">
+            <div class="header">
+                <h1>Community Forums</h1>
+                <p class="subtitle">Connect with real estate investors and professionals</p>
+            </div>
+
+            <div id="categoriesList" class="categories-grid"></div>
+        </div>
+
+        <!-- Category Threads View -->
+        <div id="categoryView" style="display: none;">
+            <div class="header">
+                <button onclick="showCategories()" class="back-btn">← Back to Categories</button>
+                <h1 id="categoryTitle"></h1>
+                <p id="categoryDescription" class="subtitle"></p>
+            </div>
+
+            <div class="create-thread-section" id="createThreadSection" style="display: none;">
+                <button onclick="toggleNewThread()" class="btn-primary">+ New Thread</button>
+            </div>
+
+            <div id="newThreadForm" class="new-thread-form" style="display: none;">
+                <h3>Create New Thread</h3>
+                <input type="text" id="threadTitle" placeholder="Thread title" class="input-field">
+                <textarea id="threadContent" placeholder="What's on your mind?" class="textarea-field" rows="6"></textarea>
+                <div class="form-actions">
+                    <button onclick="createThread()" class="btn-primary">Post Thread</button>
+                    <button onclick="toggleNewThread()" class="btn-secondary">Cancel</button>
+                </div>
+                <div id="threadError" class="error-message" style="display: none;"></div>
+            </div>
+
+            <div id="threadsList" class="threads-list"></div>
+        </div>
+
+        <!-- Thread View -->
+        <div id="threadView" style="display: none;">
+            <div class="header">
+                <button onclick="backToCategory()" class="back-btn">← Back to Threads</button>
+                <h1 id="threadTitle"></h1>
+                <div class="thread-meta">
+                    <span id="threadAuthor"></span>
+                    <span id="threadDate"></span>
+                </div>
+            </div>
+
+            <div id="postsList" class="posts-list"></div>
+
+            <div class="reply-section" id="replySection" style="display: none;">
+                <h3>Post Reply</h3>
+                <textarea id="replyContent" placeholder="Write your reply..." class="textarea-field" rows="4"></textarea>
+                <button onclick="createReply()" class="btn-primary">Post Reply</button>
+                <div id="replyError" class="error-message" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="forums-script.js"></script>
+</body>
+</html>

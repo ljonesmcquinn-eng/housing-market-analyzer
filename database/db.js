@@ -85,8 +85,14 @@ function close() {
     });
 }
 
+// Get database instance
+function getDatabase() {
+    return db;
+}
+
 module.exports = {
     db,
+    getDatabase,
     initializeDatabase,
     all,
     get,

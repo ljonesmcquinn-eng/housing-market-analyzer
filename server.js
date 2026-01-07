@@ -2,19 +2,46 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const session = require('express-session');
+const SQLiteStore = require('connect-sqlite3')(session);
 const { initializeDatabase } = require('./database/db');
 const apiRoutes = require('./routes/api');
+const authRoutes = require('./routes/auth');
+const forumRoutes = require('./routes/forum');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
-app.use(cors());
+app.use(cors({
+    origin: true,
+    credentials: true
+}));
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Session configuration
+app.use(session({
+    store: new SQLiteStore({
+        db: 'sessions.db',
+        dir: './database'
+    }),
+    secret: process.env.SESSION_SECRET || 'housing-market-analyzer-secret-change-in-production',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production'
+    }
+}));
+
 app.use(express.static('public'));
 
 // API Routes
 app.use('/api', apiRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/forum', forumRoutes);
 
 // Serve frontend
 app.get('/', (req, res) => {
