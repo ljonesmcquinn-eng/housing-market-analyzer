@@ -41,10 +41,168 @@
             background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
         }
 
+        /* Navigation Bar */
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 16px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-secondary-light);
+            font-weight: 600;
+            transition: color 0.3s ease;
+            font-size: 14px;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--primary);
+        }
+
+        .btn-primary-nav, .btn-secondary-nav {
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+            font-size: 13px;
+        }
+
+        .btn-primary-nav {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+        }
+
+        .btn-primary-nav:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(79, 70, 229, 0.4);
+        }
+
+        .btn-secondary-nav {
+            background: var(--surface-light);
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-secondary-nav:hover {
+            background: rgba(79, 70, 229, 0.1);
+        }
+
+        /* Profile Dropdown */
+        .profile-menu {
+            position: relative;
+        }
+
+        .profile-button {
+            background: var(--surface-light);
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .profile-button:hover {
+            background: rgba(79, 70, 229, 0.1);
+        }
+
+        .dropdown-arrow {
+            font-size: 10px;
+            transition: transform 0.3s ease;
+        }
+
+        .profile-button.active .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            background: var(--surface-light);
+            border: 2px solid var(--border-light);
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+            min-width: 200px;
+            display: none;
+            overflow: hidden;
+            z-index: 1000;
+        }
+
+        .dropdown-menu.show {
+            display: block;
+            animation: dropdownSlide 0.3s ease;
+        }
+
+        @keyframes dropdownSlide {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .dropdown-item {
+            display: block;
+            padding: 12px 16px;
+            color: var(--text-light);
+            text-decoration: none;
+            transition: all 0.2s ease;
+            font-size: 14px;
+        }
+
+        .dropdown-item:hover {
+            background: var(--bg-light);
+            color: var(--primary);
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: var(--border-light);
+            margin: 4px 0;
+        }
+
         /* Dark Mode Toggle */
         .theme-toggle {
             position: fixed;
-            top: 20px;
+            top: 80px;
             right: 20px;
             z-index: 1000;
             background: rgba(255, 255, 255, 0.2);
@@ -1058,6 +1216,35 @@
     </style>
 </head>
 <body>
+    <!-- Navigation Bar -->
+    <div class="navbar">
+        <div class="nav-content">
+            <a href="/" class="logo">Housing Market Analyzer</a>
+            <div class="nav-links">
+                <a href="/" class="active">Market Analysis</a>
+                <a href="/forums.html">Forums</a>
+                <div id="authButtons">
+                    <a href="/login.html" class="btn-secondary-nav">Log In</a>
+                    <a href="/signup.html" class="btn-primary-nav">Sign Up</a>
+                </div>
+                <div id="userMenu" class="profile-menu" style="display: none;">
+                    <button class="profile-button" onclick="toggleProfileDropdown()">
+                        <span id="usernameDisplay"></span>
+                        <span class="dropdown-arrow">▼</span>
+                    </button>
+                    <div id="profileDropdown" class="dropdown-menu">
+                        <a href="/dashboard.html" class="dropdown-item">📊 My Dashboard</a>
+                        <a href="/saved.html" class="dropdown-item">❤️ Saved Content</a>
+                        <a href="/saved-properties.html" class="dropdown-item">🏠 Saved Properties</a>
+                        <a href="/settings.html" class="dropdown-item">⚙️ Settings</a>
+                        <div class="dropdown-divider"></div>
+                        <a href="#" onclick="logout(); return false;" class="dropdown-item">🚪 Log Out</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Dark Mode Toggle -->
     <button class="theme-toggle" onclick="toggleDarkMode()" id="themeToggle">
         <span id="themeIcon">🌙</span>
@@ -1582,6 +1769,14 @@
 
                         <!-- Loan Details Display -->
                         <div id="loanDetailsDisplay" style="margin-top: 30px; max-width: 800px; margin-left: auto; margin-right: auto;"></div>
+
+                        <!-- Save Property Button -->
+                        <div id="savePropertySection" style="text-align: center; margin-top: 40px; display: none;">
+                            <button onclick="saveProperty()" style="padding: 14px 40px; font-size: 16px; background: linear-gradient(135deg, #10B981 0%, #059669 100%); color: white; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); transition: all 0.3s ease;">
+                                💾 Save This Property Analysis
+                            </button>
+                            <div id="savePropertyMessage" style="margin-top: 16px; font-size: 14px;"></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1617,6 +1812,175 @@
         let leafletLoaded = false;
         let leafletLoading = false;
 
+        // User authentication state
+        let currentUser = null;
+
+        // Check authentication on page load
+        async function checkAuth() {
+            try {
+                const response = await fetch('/api/auth/me', {
+                    credentials: 'include'
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success) {
+                        currentUser = data.user;
+                        document.getElementById('authButtons').style.display = 'none';
+                        document.getElementById('userMenu').style.display = 'flex';
+                        document.getElementById('usernameDisplay').textContent = data.user.username;
+                    }
+                }
+            } catch (error) {
+                console.log('Not authenticated');
+            }
+        }
+
+        // Toggle profile dropdown
+        function toggleProfileDropdown() {
+            const dropdown = document.getElementById('profileDropdown');
+            const button = document.querySelector('.profile-button');
+
+            dropdown.classList.toggle('show');
+            button.classList.toggle('active');
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            const profileMenu = document.querySelector('.profile-menu');
+            const dropdown = document.getElementById('profileDropdown');
+
+            if (profileMenu && !profileMenu.contains(e.target) && dropdown) {
+                dropdown.classList.remove('show');
+                document.querySelector('.profile-button')?.classList.remove('active');
+            }
+        });
+
+        // Logout function
+        async function logout() {
+            try {
+                await fetch('/api/auth/logout', {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                window.location.href = '/';
+            } catch (error) {
+                console.error('Logout error:', error);
+            }
+        }
+
+        // Save Property function
+        async function saveProperty() {
+            // Prompt for address
+            const address = prompt('Enter the property address:');
+
+            if (!address || address.trim() === '') {
+                return;
+            }
+
+            const messageDiv = document.getElementById('savePropertyMessage');
+            messageDiv.textContent = 'Saving...';
+            messageDiv.style.color = '#4F46E5';
+
+            try {
+                // Collect all calculated values
+                const purchasePrice = parseFloat(document.getElementById('ltPurchasePrice').value) || 0;
+                const downPaymentPct = parseFloat(document.getElementById('ltDownPayment').value) || 20;
+                const amortization = parseFloat(document.getElementById('ltAmortization').value) || 30;
+                const vacancyRate = parseFloat(document.getElementById('ltVacancy').value) || 5;
+                const insurance = parseFloat(document.getElementById('ltInsurance').value) || 1200;
+                const hoaMonthly = parseFloat(document.getElementById('ltHOA').value) || 0;
+
+                // Get interest rate based on loan type
+                const loanType = document.getElementById('ltLoanType').value;
+                let interestRate = 7; // default
+                if (loanType === 'arm') {
+                    interestRate = parseFloat(document.getElementById('ltInitialRate').value) || 5.5;
+                } else {
+                    interestRate = parseFloat(document.getElementById('ltFixedRate').value) || 7;
+                }
+
+                // Get property tax, capex, maintenance (calculated or user input)
+                const city = document.getElementById('ltCity').value;
+                const getTaxRate = (city) => {
+                    const rates = {'Nashville': 0.0068, 'Memphis': 0.0196, 'Knoxville': 0.0072};
+                    return rates[city] || 0.01;
+                };
+                const propertyTaxInput = parseFloat(document.getElementById('ltPropertyTax').value);
+                const propertyTax = propertyTaxInput || (purchasePrice * getTaxRate(city));
+
+                const capexInput = parseFloat(document.getElementById('ltCapex').value);
+                const capex = capexInput || (purchasePrice * 0.01);
+
+                const maintenanceInput = parseFloat(document.getElementById('ltMaintenance').value);
+                const maintenance = maintenanceInput || (purchasePrice * 0.01);
+
+                // Get calculated results from display
+                const monthlyPaymentText = document.getElementById('ltMonthlyPayment').textContent.replace(/[$,]/g, '');
+                const monthlyPayment = parseFloat(monthlyPaymentText) || 0;
+
+                const noiText = document.getElementById('ltNOI').textContent.replace(/[$,]/g, '');
+                const noi = parseFloat(noiText) || 0;
+                const monthlyNoi = noi / 12;
+
+                const cashOnCashText = document.getElementById('ltCashOnCash').textContent.replace('%', '');
+                const cashOnCashReturn = parseFloat(cashOnCashText) || 0;
+
+                const capRateText = document.getElementById('ltCapRate').textContent.replace('%', '');
+                const capRate = parseFloat(capRateText) || 0;
+
+                const downPaymentText = document.getElementById('ltDownPaymentAmount').textContent.replace(/[$,]/g, '');
+                const totalCashNeeded = parseFloat(downPaymentText) || 0;
+
+                // Prepare data for API
+                const propertyData = {
+                    address: address.trim(),
+                    max_purchase_price: null, // Not calculated in this flow
+                    purchase_price: purchasePrice,
+                    down_payment_percent: downPaymentPct,
+                    interest_rate: interestRate,
+                    loan_term: amortization,
+                    monthly_rent: estimatedMonthlyRent,
+                    property_tax: propertyTax,
+                    insurance: insurance,
+                    hoa: hoaMonthly,
+                    maintenance: maintenance,
+                    capex: capex,
+                    vacancy_rate: vacancyRate,
+                    monthly_payment: monthlyPayment,
+                    monthly_noi: monthlyNoi,
+                    cash_on_cash_return: cashOnCashReturn,
+                    cap_rate: capRate,
+                    total_cash_needed: totalCashNeeded,
+                    irr: null // IRR not calculated in this flow
+                };
+
+                // Save to backend
+                const response = await fetch('/api/properties', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify(propertyData)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    messageDiv.textContent = '✅ Property saved successfully!';
+                    messageDiv.style.color = '#10B981';
+                } else {
+                    messageDiv.textContent = '❌ Error: ' + (data.error || 'Failed to save property');
+                    messageDiv.style.color = '#DC2626';
+                }
+            } catch (error) {
+                console.error('Save property error:', error);
+                messageDiv.textContent = '❌ Error: Failed to save property';
+                messageDiv.style.color = '#DC2626';
+            }
+        }
+
         // Dark Mode Toggle
         function toggleDarkMode() {
             const body = document.body;
@@ -1636,8 +2000,12 @@
             }
         }
 
-        // Load dark mode preference on page load
+        // Load dark mode preference and check auth on page load
         window.addEventListener('DOMContentLoaded', () => {
+            // Check authentication
+            checkAuth();
+
+            // Load dark mode preference
             const darkModePreference = localStorage.getItem('darkMode');
             if (darkModePreference === 'enabled') {
                 document.body.classList.add('dark-mode');
@@ -2772,6 +3140,11 @@
             // Show results
             document.getElementById('detailedResults').style.display = 'block';
             document.getElementById('detailedResults').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+            // Show save button if user is authenticated
+            if (currentUser) {
+                document.getElementById('savePropertySection').style.display = 'block';
+            }
         }
 
         function calculateMaxPrice() {

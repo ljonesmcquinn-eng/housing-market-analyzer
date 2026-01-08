@@ -8,6 +8,7 @@ const { initializeDatabase } = require('./database/db');
 const apiRoutes = require('./routes/api');
 const authRoutes = require('./routes/auth');
 const forumRoutes = require('./routes/forum');
+const propertiesRoutes = require('./routes/properties');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -42,6 +43,7 @@ app.use(express.static('public'));
 app.use('/api', apiRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/forum', forumRoutes);
+app.use('/api/properties', propertiesRoutes);
 
 // Serve frontend
 app.get('/', (req, res) => {

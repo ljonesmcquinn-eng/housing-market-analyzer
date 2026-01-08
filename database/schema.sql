@@ -130,6 +130,36 @@ CREATE INDEX IF NOT EXISTS idx_posts_user ON forum_posts(user_id);
 CREATE INDEX IF NOT EXISTS idx_post_likes_post ON post_likes(post_id);
 CREATE INDEX IF NOT EXISTS idx_post_likes_user ON post_likes(user_id);
 
+-- Saved properties table: stores user's saved property analyses
+CREATE TABLE IF NOT EXISTS saved_properties (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    address TEXT NOT NULL,
+    max_purchase_price REAL,
+    purchase_price REAL,
+    down_payment_percent REAL,
+    interest_rate REAL,
+    loan_term INTEGER,
+    monthly_rent REAL,
+    property_tax REAL,
+    insurance REAL,
+    hoa REAL,
+    maintenance REAL,
+    capex REAL,
+    vacancy_rate REAL,
+    monthly_payment REAL,
+    monthly_noi REAL,
+    cash_on_cash_return REAL,
+    cap_rate REAL,
+    total_cash_needed REAL,
+    irr REAL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_saved_properties_user ON saved_properties(user_id);
+
 -- Insert default forum categories
 INSERT OR IGNORE INTO forum_categories (id, name, description, icon, display_order) VALUES
 (1, 'Market Discussion', 'Discuss housing markets, trends, and investment opportunities', '📊', 1),
