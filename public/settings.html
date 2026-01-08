@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - Housing Market Analyzer</title>
+    <link rel="stylesheet" href="/forums-style.css">
+    <style>
+        .settings-section {
+            background: var(--surface-light);
+            border: 2px solid var(--border-light);
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 24px;
+        }
+
+        .settings-section h3 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-light);
+            margin-bottom: 8px;
+        }
+
+        .settings-section p {
+            color: var(--text-secondary-light);
+            margin-bottom: 24px;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: var(--text-light);
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--border-light);
+            border-radius: 10px;
+            font-size: 16px;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .form-group small {
+            display: block;
+            margin-top: 6px;
+            color: var(--text-secondary-light);
+            font-size: 13px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .message {
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .message.success {
+            background: rgba(16, 185, 129, 0.1);
+            border: 2px solid var(--secondary);
+            color: var(--secondary);
+        }
+
+        .message.error {
+            background: rgba(220, 38, 38, 0.1);
+            border: 2px solid #DC2626;
+            color: #DC2626;
+        }
+
+        .divider {
+            height: 1px;
+            background: var(--border-light);
+            margin: 40px 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <div class="navbar">
+        <div class="nav-content">
+            <a href="/" class="logo">Housing Market Analyzer</a>
+            <div class="nav-links">
+                <a href="/">Market Analysis</a>
+                <a href="/forums.html">Forums</a>
+                <div id="authButtons">
+                    <a href="/login.html" class="btn-secondary">Log In</a>
+                    <a href="/signup.html" class="btn-primary">Sign Up</a>
+                </div>
+                <div id="userMenu" class="profile-menu" style="display: none;">
+                    <button class="profile-button" onclick="toggleProfileDropdown()">
+                        <span id="usernameDisplay"></span>
+                        <span class="dropdown-arrow">▼</span>
+                    </button>
+                    <div id="profileDropdown" class="dropdown-menu">
+                        <a href="/dashboard.html" class="dropdown-item">📊 My Dashboard</a>
+                        <a href="/saved.html" class="dropdown-item">❤️ Saved Content</a>
+                        <a href="/saved-properties.html" class="dropdown-item">🏠 Saved Properties</a>
+                        <a href="/settings.html" class="dropdown-item active">⚙️ Settings</a>
+                        <div class="dropdown-divider"></div>
+                        <a href="#" onclick="logout(); return false;" class="dropdown-item">🚪 Log Out</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <div class="header">
+            <h1>⚙️ Settings</h1>
+            <p class="subtitle">Manage your account and profile information</p>
+        </div>
+
+        <!-- Profile Settings -->
+        <div class="settings-section">
+            <h3>Profile Information</h3>
+            <p>Update your public profile details</p>
+
+            <div id="profileMessage" class="message"></div>
+
+            <form id="profileForm">
+                <div class="form-group">
+                    <label for="name">Display Name</label>
+                    <input type="text" id="name" placeholder="Enter your name">
+                    <small>This is how your name will appear on your profile and posts</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="bio">Bio</label>
+                    <textarea id="bio" placeholder="Tell us about yourself..."></textarea>
+                    <small>A brief description about you (max 500 characters)</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" placeholder="Enter username">
+                    <small>Your unique username for logging in</small>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">Save Profile</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Password Settings -->
+        <div class="settings-section">
+            <h3>Change Password</h3>
+            <p>Update your password to keep your account secure</p>
+
+            <div id="passwordMessage" class="message"></div>
+
+            <form id="passwordForm">
+                <div class="form-group">
+                    <label for="currentPassword">Current Password</label>
+                    <input type="password" id="currentPassword" placeholder="Enter current password">
+                </div>
+
+                <div class="form-group">
+                    <label for="newPassword">New Password</label>
+                    <input type="password" id="newPassword" placeholder="Enter new password">
+                    <small>Must be at least 8 characters</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm New Password</label>
+                    <input type="password" id="confirmPassword" placeholder="Confirm new password">
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">Update Password</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = null;
+
+        // Check authentication
+        async function checkAuth() {
+            try {
+                const response = await fetch('/api/auth/me', {
+                    credentials: 'include'
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success) {
+                        currentUser = data.user;
+                        document.getElementById('authButtons').style.display = 'none';
+                        document.getElementById('userMenu').style.display = 'flex';
+                        document.getElementById('usernameDisplay').textContent = data.user.username;
+
+                        // Populate form with current data
+                        document.getElementById('name').value = data.user.name || '';
+                        document.getElementById('bio').value = data.user.bio || '';
+                        document.getElementById('username').value = data.user.username || '';
+                    } else {
+                        window.location.href = '/login.html';
+                    }
+                } else {
+                    window.location.href = '/login.html';
+                }
+            } catch (error) {
+                console.error('Auth check failed:', error);
+                window.location.href = '/login.html';
+            }
+        }
+
+        // Toggle profile dropdown
+        function toggleProfileDropdown() {
+            const dropdown = document.getElementById('profileDropdown');
+            const button = document.querySelector('.profile-button');
+
+            dropdown.classList.toggle('show');
+            button.classList.toggle('active');
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            const profileMenu = document.querySelector('.profile-menu');
+            const dropdown = document.getElementById('profileDropdown');
+
+            if (profileMenu && !profileMenu.contains(e.target) && dropdown) {
+                dropdown.classList.remove('show');
+                document.querySelector('.profile-button')?.classList.remove('active');
+            }
+        });
+
+        // Logout
+        async function logout() {
+            try {
+                await fetch('/api/auth/logout', {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                window.location.href = '/';
+            } catch (error) {
+                console.error('Logout error:', error);
+            }
+        }
+
+        // Handle profile form submission
+        document.getElementById('profileForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const messageDiv = document.getElementById('profileMessage');
+            messageDiv.style.display = 'none';
+
+            const name = document.getElementById('name').value.trim();
+            const bio = document.getElementById('bio').value.trim();
+            const username = document.getElementById('username').value.trim();
+
+            if (!username) {
+                showMessage('profileMessage', 'Username is required', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/auth/profile', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({ name, bio, username })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showMessage('profileMessage', 'Profile updated successfully!', 'success');
+                    // Update username display if changed
+                    document.getElementById('usernameDisplay').textContent = username;
+                } else {
+                    showMessage('profileMessage', data.error || 'Failed to update profile', 'error');
+                }
+            } catch (error) {
+                console.error('Update profile error:', error);
+                showMessage('profileMessage', 'Failed to update profile', 'error');
+            }
+        });
+
+        // Handle password form submission
+        document.getElementById('passwordForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const messageDiv = document.getElementById('passwordMessage');
+            messageDiv.style.display = 'none';
+
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (!currentPassword || !newPassword || !confirmPassword) {
+                showMessage('passwordMessage', 'All fields are required', 'error');
+                return;
+            }
+
+            if (newPassword.length < 8) {
+                showMessage('passwordMessage', 'New password must be at least 8 characters', 'error');
+                return;
+            }
+
+            if (newPassword !== confirmPassword) {
+                showMessage('passwordMessage', 'New passwords do not match', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/auth/password', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({ currentPassword, newPassword })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showMessage('passwordMessage', 'Password updated successfully!', 'success');
+                    // Clear form
+                    document.getElementById('passwordForm').reset();
+                } else {
+                    showMessage('passwordMessage', data.error || 'Failed to update password', 'error');
+                }
+            } catch (error) {
+                console.error('Update password error:', error);
+                showMessage('passwordMessage', 'Failed to update password', 'error');
+            }
+        });
+
+        // Show message
+        function showMessage(elementId, message, type) {
+            const messageDiv = document.getElementById(elementId);
+            messageDiv.textContent = message;
+            messageDiv.className = `message ${type}`;
+            messageDiv.style.display = 'block';
+
+            // Auto-hide success messages after 5 seconds
+            if (type === 'success') {
+                setTimeout(() => {
+                    messageDiv.style.display = 'none';
+                }, 5000);
+            }
+        }
+
+        // Initialize
+        window.addEventListener('DOMContentLoaded', () => {
+            checkAuth();
+        });
+    </script>
+</body>
+</html>

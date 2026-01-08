@@ -517,21 +517,21 @@ router.delete('/posts/:id/like', requireAuth, async (req, res) => {
     }
 });
 
-// GET /api/forum/user/:id/posts - Get user's posts and threads
-router.get('/user/:id/posts', async (req, res) => {
+// GET /api/forum/user/:id/threads - Get user's threads
+router.get('/user/:id/threads', async (req, res) => {
     try {
         const db = getDatabase();
         const userId = req.params.id;
 
-        // Get threads created by user
         const threads = await new Promise((resolve, reject) => {
             db.all(
                 `SELECT
                     t.id,
                     t.title,
+                    t.view_count,
                     t.created_at,
                     c.name as category_name,
-                    COUNT(p.id) as reply_count
+                    COUNT(DISTINCT p.id) as post_count
                 FROM forum_threads t
                 JOIN forum_categories c ON t.category_id = c.id
                 LEFT JOIN forum_posts p ON t.id = p.thread_id
@@ -545,6 +545,25 @@ router.get('/user/:id/posts', async (req, res) => {
                 }
             );
         });
+
+        res.json({
+            success: true,
+            threads
+        });
+    } catch (error) {
+        console.error('Get user threads error:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Failed to get user threads'
+        });
+    }
+});
+
+// GET /api/forum/user/:id/posts - Get user's posts
+router.get('/user/:id/posts', async (req, res) => {
+    try {
+        const db = getDatabase();
+        const userId = req.params.id;
 
         // Get posts/replies by user
         const posts = await new Promise((resolve, reject) => {
@@ -572,7 +591,6 @@ router.get('/user/:id/posts', async (req, res) => {
 
         res.json({
             success: true,
-            threads,
             posts
         });
     } catch (error) {

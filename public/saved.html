@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saved Content - Housing Market Analyzer</title>
+    <link rel="stylesheet" href="/forums-style.css">
+    <style>
+        .saved-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .saved-item {
+            background: var(--surface-light);
+            border: 2px solid var(--border-light);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .saved-item:hover {
+            border-color: var(--primary);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        }
+
+        .saved-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 12px;
+        }
+
+        .saved-meta {
+            font-size: 14px;
+            color: var(--text-secondary-light);
+            margin-bottom: 12px;
+        }
+
+        .saved-author {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .saved-content {
+            color: var(--text-light);
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+
+        .saved-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 12px;
+            border-top: 1px solid var(--border-light);
+        }
+
+        .like-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: var(--text-secondary-light);
+        }
+
+        .unlike-btn {
+            background: none;
+            border: 2px solid #ff6b9d;
+            color: #ff6b9d;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .unlike-btn:hover {
+            background: #ff6b9d;
+            color: white;
+        }
+
+        .thread-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            background: rgba(79, 70, 229, 0.1);
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <div class="navbar">
+        <div class="nav-content">
+            <a href="/" class="logo">Housing Market Analyzer</a>
+            <div class="nav-links">
+                <a href="/">Market Analysis</a>
+                <a href="/forums.html">Forums</a>
+                <div id="authButtons">
+                    <a href="/login.html" class="btn-secondary">Log In</a>
+                    <a href="/signup.html" class="btn-primary">Sign Up</a>
+                </div>
+                <div id="userMenu" class="profile-menu" style="display: none;">
+                    <button class="profile-button" onclick="toggleProfileDropdown()">
+                        <span id="usernameDisplay"></span>
+                        <span class="dropdown-arrow">▼</span>
+                    </button>
+                    <div id="profileDropdown" class="dropdown-menu">
+                        <a href="/dashboard.html" class="dropdown-item">📊 My Dashboard</a>
+                        <a href="/saved.html" class="dropdown-item active">❤️ Saved Content</a>
+                        <a href="/saved-properties.html" class="dropdown-item">🏠 Saved Properties</a>
+                        <a href="/settings.html" class="dropdown-item">⚙️ Settings</a>
+                        <div class="dropdown-divider"></div>
+                        <a href="#" onclick="logout(); return false;" class="dropdown-item">🚪 Log Out</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <div class="header">
+            <h1>❤️ Saved Content</h1>
+            <p class="subtitle">Posts you've liked from the forums</p>
+        </div>
+
+        <!-- Saved Posts -->
+        <div id="savedContainer" class="saved-list">
+            <div class="empty-state">
+                <h3>Loading...</h3>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = null;
+
+        // Check authentication
+        async function checkAuth() {
+            try {
+                const response = await fetch('/api/auth/me', {
+                    credentials: 'include'
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success) {
+                        currentUser = data.user;
+                        document.getElementById('authButtons').style.display = 'none';
+                        document.getElementById('userMenu').style.display = 'flex';
+                        document.getElementById('usernameDisplay').textContent = data.user.username;
+
+                        // Load saved posts
+                        loadSavedPosts();
+                    } else {
+                        window.location.href = '/login.html';
+                    }
+                } else {
+                    window.location.href = '/login.html';
+                }
+            } catch (error) {
+                console.error('Auth check failed:', error);
+                window.location.href = '/login.html';
+            }
+        }
+
+        // Toggle profile dropdown
+        function toggleProfileDropdown() {
+            const dropdown = document.getElementById('profileDropdown');
+            const button = document.querySelector('.profile-button');
+
+            dropdown.classList.toggle('show');
+            button.classList.toggle('active');
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            const profileMenu = document.querySelector('.profile-menu');
+            const dropdown = document.getElementById('profileDropdown');
+
+            if (profileMenu && !profileMenu.contains(e.target) && dropdown) {
+                dropdown.classList.remove('show');
+                document.querySelector('.profile-button')?.classList.remove('active');
+            }
+        });
+
+        // Logout
+        async function logout() {
+            try {
+                await fetch('/api/auth/logout', {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                window.location.href = '/';
+            } catch (error) {
+                console.error('Logout error:', error);
+            }
+        }
+
+        // Load saved posts
+        async function loadSavedPosts() {
+            try {
+                const response = await fetch(`/api/forum/user/${currentUser.id}/liked`, {
+                    credentials: 'include'
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    displaySavedPosts(data.posts);
+                } else {
+                    document.getElementById('savedContainer').innerHTML = `
+                        <div class="empty-state">
+                            <h3>Error loading saved content</h3>
+                            <p>${data.error}</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Load saved posts error:', error);
+                document.getElementById('savedContainer').innerHTML = `
+                    <div class="empty-state">
+                        <h3>Error loading saved content</h3>
+                        <p>Please try again later</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Display saved posts
+        function displaySavedPosts(posts) {
+            const container = document.getElementById('savedContainer');
+
+            if (!posts || posts.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <h3>No saved posts yet</h3>
+                        <p>Like posts in the forums to save them here!</p>
+                        <div style="margin-top: 20px;">
+                            <a href="/forums.html" class="btn-primary">Go to Forums</a>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = posts.map(post => {
+                const date = new Date(post.created_at).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+
+                return `
+                    <div class="saved-item" onclick="window.location.href='/forums.html?thread=${post.thread_id}'">
+                        <div class="saved-header">
+                            <div>
+                                <div class="thread-badge">Thread: ${escapeHtml(post.thread_title || 'Discussion')}</div>
+                                <div class="saved-meta">
+                                    Posted by <span class="saved-author">${escapeHtml(post.username)}</span> on ${date}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="saved-content">${escapeHtml(post.content)}</div>
+                        <div class="saved-footer">
+                            <div class="like-info">
+                                <span>❤️ ${post.like_count || 0} likes</span>
+                            </div>
+                            <button class="unlike-btn" onclick="event.stopPropagation(); unlikePost(${post.id})">
+                                Unlike
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Unlike a post
+        async function unlikePost(postId) {
+            if (!confirm('Remove this post from your saved content?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/forum/posts/${postId}/like`, {
+                    method: 'DELETE',
+                    credentials: 'include'
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Reload saved posts
+                    loadSavedPosts();
+                } else {
+                    alert('Error: ' + (data.error || 'Failed to unlike post'));
+                }
+            } catch (error) {
+                console.error('Unlike post error:', error);
+                alert('Error: Failed to unlike post');
+            }
+        }
+
+        // Helper function
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Initialize
+        window.addEventListener('DOMContentLoaded', () => {
+            checkAuth();
+        });
+    </script>
+</body>
+</html>

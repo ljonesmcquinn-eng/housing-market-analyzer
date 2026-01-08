@@ -507,10 +507,31 @@
             margin-bottom: 20px;
             text-align: center;
             transition: color 0.3s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 16px;
         }
 
         body.dark-mode .chart-title {
             color: var(--text-dark);
+        }
+
+        .chart-change {
+            font-size: 14px;
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 20px;
+        }
+
+        .chart-change.positive {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--secondary);
+        }
+
+        .chart-change.negative {
+            background: rgba(220, 38, 38, 0.1);
+            color: #DC2626;
         }
 
         canvas {
@@ -1343,22 +1364,34 @@
             <h3 class="section-title">Historical Trends</h3>
 
             <div class="chart-container">
-                <div class="chart-title">Population Growth</div>
+                <div class="chart-title">
+                    Population Growth
+                    <span id="populationChange" class="chart-change"></span>
+                </div>
                 <canvas id="populationChart"></canvas>
             </div>
 
             <div class="chart-container">
-                <div class="chart-title">Median Household Income</div>
+                <div class="chart-title">
+                    Median Household Income
+                    <span id="incomeChange" class="chart-change"></span>
+                </div>
                 <canvas id="incomeChart"></canvas>
             </div>
 
             <div class="chart-container">
-                <div class="chart-title">Median Home Value</div>
+                <div class="chart-title">
+                    Median Home Value
+                    <span id="homeValueChange" class="chart-change"></span>
+                </div>
                 <canvas id="homeValueChart"></canvas>
             </div>
 
             <div class="chart-container">
-                <div class="chart-title">Median Rent</div>
+                <div class="chart-title">
+                    Median Rent
+                    <span id="rentChange" class="chart-change"></span>
+                </div>
                 <canvas id="rentChart"></canvas>
             </div>
 
@@ -2162,10 +2195,10 @@
 
             // Draw charts after a brief delay to ensure containers are rendered
             setTimeout(() => {
-                drawChart('populationChart', market.historical, 'population', 'Population');
-                drawChart('incomeChart', market.historical, 'medianIncome', 'Median Income', true);
-                drawChart('homeValueChart', market.historical, 'medianHomeValue', 'Home Value', true);
-                drawChart('rentChart', market.historical, 'medianRent', 'Rent', true);
+                drawChart('populationChart', market.historical, 'population', 'Population', false, 'populationChange');
+                drawChart('incomeChart', market.historical, 'medianIncome', 'Median Income', true, 'incomeChange');
+                drawChart('homeValueChart', market.historical, 'medianHomeValue', 'Home Value', true, 'homeValueChange');
+                drawChart('rentChart', market.historical, 'medianRent', 'Rent', true, 'rentChange');
             }, 100);
         }
 
@@ -2193,7 +2226,7 @@
             element.innerHTML = `${sign}${growth.total.toFixed(1)}% (${years}yr)<br>${sign}${absoluteStr}`;
         }
 
-        function drawChart(canvasId, data, field, label, isDollar = false) {
+        function drawChart(canvasId, data, field, label, isDollar = false, changeElementId = null) {
             const canvas = document.getElementById(canvasId);
             if (!canvas) {
                 console.error(`Canvas ${canvasId} not found`);
@@ -2228,6 +2261,21 @@
 
             const years = data.map(d => d.year);
             const values = data.map(d => d[field]);
+
+            // Calculate and display percent change
+            if (changeElementId && values.length >= 2) {
+                const firstValue = values[0];
+                const lastValue = values[values.length - 1];
+                const percentChange = ((lastValue - firstValue) / firstValue) * 100;
+                const changeElement = document.getElementById(changeElementId);
+
+                if (changeElement) {
+                    const sign = percentChange >= 0 ? '+' : '';
+                    const className = percentChange >= 0 ? 'positive' : 'negative';
+                    changeElement.textContent = `${sign}${percentChange.toFixed(1)}%`;
+                    changeElement.className = `chart-change ${className}`;
+                }
+            }
             const minValue = Math.min(...values) * 0.9;
             const maxValue = Math.max(...values) * 1.1;
 
