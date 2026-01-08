@@ -31,24 +31,29 @@
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            background: #F5F7FA;
             min-height: 100vh;
             padding: 0;
             transition: background 0.3s ease;
         }
 
         body.dark-mode {
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            background: #0F1419;
         }
 
         /* Navigation Bar */
         .navbar {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            background: #FFFFFF;
+            border-bottom: 1px solid #E5E7EB;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
             position: sticky;
             top: 0;
             z-index: 100;
+        }
+
+        body.dark-mode .navbar {
+            background: #1F2937;
+            border-bottom: 1px solid #374151;
         }
 
         .nav-content {
@@ -63,8 +68,12 @@
         .logo {
             font-size: 20px;
             font-weight: 800;
-            color: var(--primary);
+            color: #1E3A8A;
             text-decoration: none;
+        }
+
+        body.dark-mode .logo {
+            color: #3B82F6;
         }
 
         .nav-links {
@@ -222,6 +231,242 @@
         .theme-toggle:hover {
             transform: scale(1.05);
             background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Hero Section */
+        .hero-section {
+            background: linear-gradient(135deg, #0F2027 0%, #203A43 50%, #2C5364 100%);
+            padding: 100px 20px;
+            text-align: center;
+            margin-top: -40px;
+        }
+
+        body.dark-mode .hero-section {
+            background: linear-gradient(135deg, #000000 0%, #1a1a2e 50%, #2C5364 100%);
+        }
+
+        .hero-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .hero-title {
+            font-size: 56px;
+            font-weight: 900;
+            color: white;
+            margin-bottom: 20px;
+            letter-spacing: -1px;
+        }
+
+        .hero-subtitle {
+            font-size: 20px;
+            color: rgba(255, 255, 255, 0.95);
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* Main Content */
+        .main-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Feature Banners */
+        .feature-banners {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            margin-top: -20px;
+        }
+
+        .feature-banner {
+            padding: 60px 80px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .banner-primary {
+            background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%);
+        }
+
+        .banner-success {
+            background: linear-gradient(135deg, #115E59 0%, #14B8A6 100%);
+        }
+
+        .banner-warning {
+            background: linear-gradient(135deg, #374151 0%, #6B7280 100%);
+        }
+
+        body.dark-mode .banner-primary {
+            background: linear-gradient(135deg, #1E3A8A 0%, #1E40AF 100%);
+        }
+
+        body.dark-mode .banner-success {
+            background: linear-gradient(135deg, #134E4A 0%, #0F766E 100%);
+        }
+
+        body.dark-mode .banner-warning {
+            background: linear-gradient(135deg, #1F2937 0%, #374151 100%);
+        }
+
+        .banner-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 60px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .banner-text {
+            flex: 1;
+            color: white;
+        }
+
+        .banner-title {
+            font-size: 36px;
+            font-weight: 800;
+            margin-bottom: 16px;
+            color: white;
+        }
+
+        .banner-description {
+            font-size: 18px;
+            line-height: 1.6;
+            opacity: 0.95;
+            margin-bottom: 24px;
+        }
+
+        .banner-features {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .feature-tag {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+        }
+
+        .banner-action {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            min-width: 300px;
+        }
+
+        .banner-select {
+            padding: 16px 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.95);
+            color: #333;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .banner-select:hover {
+            background: white;
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .banner-select:focus {
+            outline: none;
+            border-color: white;
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2);
+        }
+
+        .banner-btn {
+            padding: 16px 32px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .banner-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-primary {
+            background: white;
+            color: #1E3A8A;
+        }
+
+        .btn-success {
+            background: white;
+            color: #115E59;
+        }
+
+        .btn-warning {
+            background: white;
+            color: #374151;
+        }
+
+        @media (max-width: 1024px) {
+            .banner-content {
+                flex-direction: column;
+                gap: 40px;
+            }
+
+            .banner-action {
+                width: 100%;
+                max-width: 400px;
+            }
+
+            .feature-banner {
+                padding: 40px 40px;
+            }
+
+            .hero-title {
+                font-size: 40px;
+            }
+
+            .hero-subtitle {
+                font-size: 18px;
+            }
+
+            .banner-title {
+                font-size: 28px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .feature-banner {
+                padding: 30px 20px;
+            }
+
+            .hero-section {
+                padding: 60px 20px;
+            }
+
+            .hero-title {
+                font-size: 32px;
+            }
+
+            .hero-subtitle {
+                font-size: 16px;
+            }
+
+            .banner-title {
+                font-size: 24px;
+            }
+
+            .banner-description {
+                font-size: 16px;
+            }
         }
 
         .container {
@@ -1272,10 +1517,17 @@
         <span id="themeText">Dark Mode</span>
     </button>
 
-    <div class="container">
-        <h1>Housing Market Analyzer</h1>
-        <p class="subtitle">Analyze real estate markets with comprehensive demographic and economic data</p>
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <div class="hero-content">
+            <h1 class="hero-title">Housing Market Analyzer</h1>
+            <p class="hero-subtitle">Make informed real estate investment decisions with comprehensive market data and analytics</p>
+        </div>
+    </div>
 
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Bookmarks Panel -->
         <div class="bookmarks-panel" id="bookmarksPanel" style="display: none;">
             <div class="bookmarks-header">
                 <div class="bookmarks-title">📌 Bookmarked Markets</div>
@@ -1288,29 +1540,75 @@
             </div>
         </div>
 
-        <div class="selection-section">
-            <div class="market-selector">
-                <div class="input-group">
-                    <label for="citySelect">Select Market</label>
-                    <select id="citySelect">
-                        <option value="">Choose a city...</option>
-                    </select>
+        <!-- Feature Banners -->
+        <div class="feature-banners">
+            <!-- Market Analysis Banner -->
+            <div class="feature-banner banner-primary">
+                <div class="banner-content">
+                    <div class="banner-text">
+                        <h2 class="banner-title">Market Analysis</h2>
+                        <p class="banner-description">Explore demographic trends, population growth, income levels, and property values across Tennessee markets</p>
+                        <div class="banner-features">
+                            <span class="feature-tag">📊 Historical Data</span>
+                            <span class="feature-tag">📈 Growth Metrics</span>
+                            <span class="feature-tag">🗺️ Submarket Analysis</span>
+                        </div>
+                    </div>
+                    <div class="banner-action">
+                        <select id="citySelect" class="banner-select">
+                            <option value="">Select a market...</option>
+                        </select>
+                        <button onclick="analyzeMarket()" id="analyzeBtn" class="banner-btn btn-primary">
+                            Analyze Market →
+                        </button>
+                    </div>
                 </div>
-                <div class="input-group">
-                    <button onclick="analyzeMarket()" id="analyzeBtn">Analyze Market</button>
+            </div>
+
+            <!-- Property Calculator Banner -->
+            <div class="feature-banner banner-success">
+                <div class="banner-content">
+                    <div class="banner-text">
+                        <h2 class="banner-title">Property Investment Calculator</h2>
+                        <p class="banner-description">Calculate cash flow, cash-on-cash returns, cap rates, and detailed financial projections for rental properties</p>
+                        <div class="banner-features">
+                            <span class="feature-tag">💰 Cash Flow Analysis</span>
+                            <span class="feature-tag">📉 Cap Rate & CoC</span>
+                            <span class="feature-tag">💾 Save Properties</span>
+                        </div>
+                    </div>
+                    <div class="banner-action">
+                        <button onclick="showPropertyAnalysis()" class="banner-btn btn-success">
+                            Launch Calculator →
+                        </button>
+                    </div>
                 </div>
-                <div class="input-group">
-                    <button onclick="showPropertyAnalysis()" style="background: linear-gradient(135deg, #28a745 0%, #20833a 100%);">
-                        Property Investment Calculator →
-                    </button>
-                </div>
-                <div class="input-group">
-                    <button onclick="window.location.href='/forums.html'" style="background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);">
-                        💬 Community Forums →
-                    </button>
+            </div>
+
+            <!-- Community Forums Banner -->
+            <div class="feature-banner banner-warning">
+                <div class="banner-content">
+                    <div class="banner-text">
+                        <h2 class="banner-title">Community Forums</h2>
+                        <p class="banner-description">Connect with real estate investors, share strategies, discuss markets, and get advice from experienced professionals</p>
+                        <div class="banner-features">
+                            <span class="feature-tag">💬 Discussions</span>
+                            <span class="feature-tag">🤝 Professional Network</span>
+                            <span class="feature-tag">💡 Investment Tips</span>
+                        </div>
+                    </div>
+                    <div class="banner-action">
+                        <button onclick="window.location.href='/forums.html'" class="banner-btn btn-warning">
+                            Join Community →
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- Results Container -->
+    <div class="container" style="margin-top: 0;">
 
         <div id="loading" class="loading" style="display: none;">
             <div class="spinner"></div>
