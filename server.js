@@ -13,6 +13,9 @@ const propertiesRoutes = require('./routes/properties');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Trust proxy - required for secure cookies on Render
+app.set('trust proxy', 1);
+
 // Middleware
 app.use(cors({
     origin: true,
