@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learning Center - DeedIQ</title>
+    <style>
+        :root {
+            --primary: #4F46E5;
+            --primary-dark: #4338CA;
+            --secondary: #10B981;
+            --accent: #F59E0B;
+            --bg-light: #F9FAFB;
+            --bg-dark: #111827;
+            --surface-light: #FFFFFF;
+            --surface-dark: #1F2937;
+            --text-light: #111827;
+            --text-dark: #F9FAFB;
+            --text-secondary-light: #6B7280;
+            --text-secondary-dark: #9CA3AF;
+            --border-light: #E5E7EB;
+            --border-dark: #374151;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            min-height: 100vh;
+            padding-bottom: 40px;
+        }
+
+        body.dark-mode {
+            background: linear-gradient(135deg, #0F2027 0%, #203A43 50%, #2C5364 100%);
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        body.dark-mode .navbar {
+            background: rgba(31, 41, 55, 0.95);
+        }
+
+        .nav-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 12px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-secondary-light);
+            font-weight: 600;
+            transition: color 0.3s ease;
+            font-size: 14px;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--primary);
+        }
+
+        .btn-secondary-nav, .btn-primary-nav {
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+            font-size: 13px;
+        }
+
+        .btn-primary-nav {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+        }
+
+        .btn-secondary-nav {
+            background: var(--surface-light);
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .theme-toggle-btn {
+            background: transparent;
+            border: 2px solid var(--border-light);
+            border-radius: 8px;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 8px;
+        }
+
+        .theme-toggle-btn:hover {
+            background: var(--bg-light);
+            transform: scale(1.05);
+        }
+
+        body.dark-mode .theme-toggle-btn {
+            border-color: var(--border-dark);
+        }
+
+        body.dark-mode .theme-toggle-btn:hover {
+            background: var(--surface-dark);
+        }
+
+        .profile-menu {
+            position: relative;
+        }
+
+        .profile-button {
+            background: var(--surface-light);
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            background: var(--surface-light);
+            border: 2px solid var(--border-light);
+            border-radius: 12px;
+            min-width: 200px;
+            display: none;
+            z-index: 1000;
+        }
+
+        .dropdown-menu.show {
+            display: block;
+        }
+
+        .dropdown-item {
+            display: block;
+            padding: 12px 16px;
+            color: var(--text-light);
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: var(--border-light);
+            margin: 4px 0;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            box-shadow: 0 25px 80px rgba(0,0,0,0.2);
+            padding: 48px;
+        }
+
+        body.dark-mode .container {
+            background: rgba(31, 41, 55, 0.95);
+        }
+
+        h1 {
+            font-size: 42px;
+            font-weight: 900;
+            color: var(--primary);
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        body.dark-mode h1 {
+            color: #60A5FA;
+        }
+
+        .subtitle {
+            font-size: 18px;
+            color: var(--text-secondary-light);
+            margin-bottom: 40px;
+            text-align: center;
+            line-height: 1.6;
+        }
+
+        body.dark-mode .subtitle {
+            color: var(--text-secondary-dark);
+        }
+
+        .article-grid {
+            display: grid;
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .article-card {
+            background: var(--surface-light);
+            border: 2px solid var(--border-light);
+            border-radius: 16px;
+            padding: 24px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        body.dark-mode .article-card {
+            background: var(--surface-dark);
+            border-color: var(--border-dark);
+        }
+
+        .article-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 32px rgba(79, 70, 229, 0.2);
+            border-color: var(--primary);
+        }
+
+        .article-icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+
+        .article-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-light);
+            margin-bottom: 12px;
+        }
+
+        body.dark-mode .article-title {
+            color: var(--text-dark);
+        }
+
+        .article-description {
+            font-size: 14px;
+            color: var(--text-secondary-light);
+            line-height: 1.6;
+        }
+
+        body.dark-mode .article-description {
+            color: var(--text-secondary-dark);
+        }
+
+        .article-full {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .article-full.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .article-header {
+            margin-bottom: 32px;
+            padding-bottom: 24px;
+            border-bottom: 2px solid var(--border-light);
+        }
+
+        body.dark-mode .article-header {
+            border-bottom-color: var(--border-dark);
+        }
+
+        .back-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background: var(--surface-light);
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .back-button:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .hero-summary {
+            background: linear-gradient(135deg, #e8f0fe 0%, #d4e4f7 100%);
+            border-left: 4px solid var(--primary);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 32px;
+        }
+
+        body.dark-mode .hero-summary {
+            background: linear-gradient(135deg, #1e3a5f 0%, #2a4a6f 100%);
+        }
+
+        .hero-summary p {
+            color: var(--text-light);
+            font-size: 16px;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        body.dark-mode .hero-summary p {
+            color: var(--text-dark);
+        }
+
+        .article-section {
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 16px;
+        }
+
+        body.dark-mode .section-title {
+            color: #60A5FA;
+        }
+
+        .section-subtitle {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-light);
+            margin-bottom: 12px;
+            margin-top: 24px;
+        }
+
+        body.dark-mode .section-subtitle {
+            color: var(--text-dark);
+        }
+
+        .bullet-list {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .bullet-list li {
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-light);
+            line-height: 1.6;
+        }
+
+        body.dark-mode .bullet-list li {
+            border-bottom-color: var(--border-dark);
+        }
+
+        .bullet-list li:last-child {
+            border-bottom: none;
+        }
+
+        .bullet-term {
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        body.dark-mode .bullet-term {
+            color: #60A5FA;
+        }
+
+        .bullet-definition {
+            color: var(--text-light);
+        }
+
+        body.dark-mode .bullet-definition {
+            color: var(--text-dark);
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 24px 0;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid var(--border-light);
+        }
+
+        body.dark-mode .comparison-table th,
+        body.dark-mode .comparison-table td {
+            border-color: var(--border-dark);
+        }
+
+        .comparison-table th {
+            background: var(--primary);
+            color: white;
+            font-weight: 600;
+        }
+
+        .comparison-table td {
+            color: var(--text-light);
+        }
+
+        body.dark-mode .comparison-table td {
+            color: var(--text-dark);
+        }
+
+        .key-takeaways {
+            background: linear-gradient(135deg, #d4f7e7 0%, #c2f0dc 100%);
+            border-left: 4px solid var(--secondary);
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 32px;
+        }
+
+        body.dark-mode .key-takeaways {
+            background: linear-gradient(135deg, #1e4d3a 0%, #2a5f4a 100%);
+        }
+
+        .final-note {
+            text-align: center;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--primary);
+            margin-top: 48px;
+            padding-top: 32px;
+            border-top: 2px solid var(--border-light);
+        }
+
+        body.dark-mode .final-note {
+            color: #60A5FA;
+            border-top-color: var(--border-dark);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <div class="navbar">
+        <div class="nav-content">
+            <a href="/" class="logo">DeedIQ</a>
+            <div class="nav-links">
+                <a href="/">Market Analysis</a>
+                <a href="/?tool=calculator">Property Calculator</a>
+                <a href="/learning.html" class="active">Learning</a>
+                <a href="/forums.html">Forums</a>
+                <button class="theme-toggle-btn" onclick="toggleDarkMode()" id="themeToggleBtn" title="Toggle dark mode">
+                    <span id="themeIconNav">🌙</span>
+                </button>
+                <div id="authButtons">
+                    <a href="/login.html" class="btn-secondary-nav">Log In</a>
+                    <a href="/signup.html" class="btn-primary-nav">Sign Up</a>
+                </div>
+                <div id="userMenu" class="profile-menu" style="display: none;">
+                    <button class="profile-button" onclick="toggleProfileDropdown()">
+                        <span id="usernameDisplay"></span>
+                        <span class="dropdown-arrow">▼</span>
+                    </button>
+                    <div id="profileDropdown" class="dropdown-menu">
+                        <a href="/dashboard.html" class="dropdown-item">📊 My Dashboard</a>
+                        <a href="/saved.html" class="dropdown-item">❤️ Saved Content</a>
+                        <a href="/saved-properties.html" class="dropdown-item">🏠 Saved Properties</a>
+                        <a href="/settings.html" class="dropdown-item">⚙️ Settings</a>
+                        <div class="dropdown-divider"></div>
+                        <a href="#" onclick="logout(); return false;" class="dropdown-item">🚪 Log Out</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Article List View -->
+        <div id="articleList">
+            <h1>📘 Learning Center</h1>
+            <p class="subtitle">Master real estate fundamentals with clear, beginner-friendly guides</p>
+
+            <div class="article-grid">
+                <div class="article-card" onclick="showArticle('article1')">
+                    <div class="article-icon">💰</div>
+                    <h3 class="article-title">Real Estate Finance Basics: IRR & Cash-on-Cash Returns</h3>
+                    <p class="article-description">Understanding returns helps investors compare deals objectively instead of relying on gut feel. Learn the two most common real estate return metrics and how to interpret them.</p>
+                </div>
+
+                <div class="article-card" onclick="showArticle('article2')">
+                    <div class="article-icon">📊</div>
+                    <h3 class="article-title">Residential Market Analysis: How to Evaluate a Housing Market</h3>
+                    <p class="article-description">Market fundamentals determine long-term demand, rent growth, and downside risk. Discover the key variables investors use to evaluate residential markets.</p>
+                </div>
+
+                <div class="article-card" onclick="showArticle('article3')">
+                    <div class="article-icon">⚖️</div>
+                    <h3 class="article-title">Real Estate Law Basics: What Every Investor Should Understand</h3>
+                    <p class="article-description">Legal structure and compliance affect risk, profitability, and scalability. Learn essential legal concepts every real estate investor should understand.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Article 1: IRR & Cash-on-Cash -->
+        <div id="article1" class="article-full">
+            <button class="back-button" onclick="showArticleList()">← Back to Learning Center</button>
+
+            <div class="article-header">
+                <div class="article-icon">💰</div>
+                <h2 class="section-title">Real Estate Finance Basics: IRR & Cash-on-Cash Returns</h2>
+            </div>
+
+            <div class="hero-summary">
+                <p>Understanding returns helps investors compare deals objectively instead of relying on gut feel. This guide explains the two most common real estate return metrics and how to interpret them.</p>
+            </div>
+
+            <div class="article-section">
+                <h3 class="section-title">Why Return Metrics Matter</h3>
+                <ul class="bullet-list">
+                    <li><span class="bullet-term">Return metrics:</span> <span class="bullet-definition">Tools used to measure how profitable an investment is over time.</span></li>
+                    <li><span class="bullet-term">Capital efficiency:</span> <span class="bullet-definition">How effectively your invested money generates returns.</span></li>
+                    <li><span class="bullet-term">Risk assessment:</span> <span class="bullet-definition">Understanding how sensitive a deal is to bad assumptions.</span></li>
+                </ul>
+            </div>
+
+            <div class="article-section">
+                <h3 class="section-title">Cash-on-Cash Return (Income Today)</h3>
+
+                <h4 class="section-subtitle">What It Is</h4>
+                <ul class="bullet-list">
+                    <li><span class="bullet-term">Cash-on-cash return:</span> <span class="bullet-definition">Annual cash income divided by the total cash you invested.</span></li>
+                </ul>
+
+                <h4 class="section-subtitle">What Goes Into Cash-on-Cash</h4>
+                <ul class="bullet-list">
+                    <li><span class="bullet-term">Rental income:</span> <span class="bullet-definition">Money collected from tenants.</span></li>
+                    <li><span class="bullet-term">Operating expenses:</span> <span class="bullet-definition">Ongoing costs like taxes, insurance, repairs, and management.</span></li>
+                    <li><span class="bullet-term">Debt service:</span> <span class="bullet-definition">Monthly mortgage payments.</span></li>
+                    <li><span class="bullet-term">Cash invested:</span> <span class="bullet-definition">Money paid upfront, including down payment and closing costs.</span></li>
+                </ul>
+
+                <h4 class="section-subtitle">What It Tells Investors</h4>
+                <ul class="bullet-list">
+                    <li><span class="bullet-term">Income strength:</span> <span class="bullet-definition">How much spendable cash the property produces.</span></li>
+                    <li><span class="bullet-term">Stability:</span> <span class="bullet-definition">Whether the property can support expenses during slow periods.</span></li>
+                    <li><span class="bullet-term">Cash dependency:</span> <span class="bullet-definition">How reliant the deal is on appreciation or sale.</span></li>
+                </ul>
+
+                <h4 class="section-subtitle">What It Does Not Capture</h4>
+                <ul class="bullet-list">
+                    <li><span class="bullet-term">Appreciation:</span> <span class="bullet-definition">Increase in property value over time.</span></li>
+                    <li><span class="bullet-term">Loan paydown:</span> <span class="bullet-definition">Reduction of mortgage balance as tenants pay rent.</span></li>
+                    <li><span class="bullet-term">Exit profits:</span> <span class="bullet-definition">Money earned when the property is sold.</span></li>
+                </ul>
+            </div>
+
+            <div class="article-section">
+                <h3 class="section-title">IRR (Total Performance Over Time)</h3>
+
+                <h4 class="section-subtitle">What It Is</h4>
+                <ul class="bullet-list">
+                    <li><span class="bullet-term">Internal Rate of Return (IRR):</span> <span class="bullet-definition">The annualized return earned across the entire life of the investment.</span></li>
+                </ul>
+
+                <h4 class="section-subtitle">What Goes Into IRR</h4>
+                <ul class="bullet-list">
+                    <li><span class="bullet-term">Initial investment:</span> <span class="bullet-definition">Cash paid at purchase.</span></li>
+                    <li><span class="bullet-term">Annual cash flows:</span> <span class="bullet-definition">Net income received each year.</span></li>
+                    <li><span class="bullet-term">Holding period:</span> <span class="bullet-definition">Length of time the property is owned.</span></li>
+                    <li><span class="bullet-term">Sale proceeds:</span> <span class="bullet-definition">Cash received after selling the property and paying selling costs.</span></li>
+                </ul>
+
+                <h4 class="section-subtitle">What IRR Captures</h4>
+                <ul class="bullet-list">
+                    <li><span class="bullet-term">Appreciation:</span> <span class="bullet-definition">Growth in property value over time.</span></li>
+                    <li><span class="bullet-term">Loan amortization:</span> <span class="bullet-definition">Gradual payoff of mortgage principal.</span></li>
+                    <li><span class="bullet-term">Timing effects:</span> <span class="bullet-definition">Value of receiving money sooner rather than later.</span></li>
+                </ul>
+
+                <h4 class="section-subtitle">Limitations to Understand</h4>
+                <ul class="bullet-list">
+                    <li><span class="bullet-term">Reinvestment assumption:</span> <span class="bullet-definition">Assumes future cash can be reinvested at the same return.</span></li>
+                    <li><span class="bullet-term">Exit sensitivity:</span> <span class="bullet-definition">Small changes in sale price can dramatically affect IRR.</span></li>
+                    <li><span class="bullet-term">Short-hold distortion:</span> <span class="bullet-definition">Short holding periods can inflate IRR artificially.</span></li>
+                </ul>
+            </div>
+
+            <div class="article-section">
+                <h3 class="section-title">IRR vs Cash-on-Cash</h3>
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Metric</th>
+                            <th>Focus</th>
+                            <th>Explanation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Cash-on-cash</td>
+                            <td>Annual income</td>
+                            <td>Measures how much cash the investment produces each year.</td>
+                        </tr>
+                        <tr>
+                            <td>IRR</td>
+                            <td>Total return</td>
+                            <td>Measures overall performance across the entire holding period.</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="key-takeaways">
+                    <h4 class="section-subtitle">Key Takeaways</h4>
+                    <ul class="bullet-list">
+                        <li><span class="bullet-term">Cash-on-cash:</span> <span class="bullet-definition">Best for evaluating income stability.</span></li>
+                        <li><span class="bullet-term">IRR:</span> <span class="bullet-definition">Best for comparing long-term performance.</span></li>
+                        <li><span class="bullet-term">Combined use:</span> <span class="bullet-definition">Strong deals usually perform well under both metrics.</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Article 2: Market Analysis -->
+        <div id="article2" class="article-full">
+            <button class="back-button" onclick="showArticleList()">← Back to Learning Center</button>
+
+            <div class="article-header">
+                <div class="article-icon">📊</div>
+                <h2 class="section-title">Residential Market Analysis: How to Evaluate a Housing Market</h2>
+            </div>
+
+            <div class="hero-summary">
+                <p>Market fundamentals determine long-term demand, rent growth, and downside risk. This guide explains the key variables investors use to evaluate residential markets.</p>
+            </div>
+
+            <div class="article-section">
+                <h3 class="section-title">Vacancy Rates</h3>
+                <ul class="bullet-list">
+                    <li><span class="bullet-term">Vacancy rate:</span> <span class="bullet-definition">Percentage of rental units that are unoccupied.</span></li>
+                    <li><span class="bullet-term">Low vacancy:</span> <span class="bullet-definition">Indicates strong tenant demand and pricing power.</span></li>
+                    <li><span class="bullet-term">High vacancy:</span> <span class="bullet-definition">Signals oversupply or weak demand.</span></li>
+                </ul>
+            </div>
+
+            <div class="article-section">
+                <h3 class="section-title">Population Growth</h3>
+                <ul class="bullet-list">
+                    <li><span class="bullet-term">Population growth:</span> <span class="bullet-definition">Net increase or decrease in residents.</span></li>
+                    <li><span class="bullet-term">In-migration:</span> <span class="bullet-definition">People moving into the area, increasing housing demand.</span></li>
+                    <li><span class="bullet-term">Outmigration:</span> <span class="bullet-definition">People leaving the area, reducing demand.</span></li>
+                </ul>
+            </div>
+
+            <div class="article-section">
+                <h3 class="section-title">Income & Job Growth</h3>
+                <ul class="bullet-list">
+                    <li><span class="bullet-term">Income growth:</span> <span class="bullet-definition">Increases in wages earned by residents.</span></li>
+                    <li><span class="bullet-term">Employment growth:</span> <span class="bullet-definition">Expansion of available jobs.</span></li>
+                    <li><span class="bullet-term">Job diversity:</span> <span class="bullet-definition">Presence of multiple industries, reducing economic risk.</span></li>
+                </ul>
+            </div>
+
+            <div class="article-section">
+                <h3 class="section-title">Home Price Growth</h3>
+                <ul class="bullet-list">
+                    <li><span class="bullet-term">Price appreciation:</span> <span class="bullet-definition">Increase in home values over time.</span></li>
+                    <li><span class="bullet-term">Historical context:</span> <span class="bullet-definition">Past price movement used for comparison, not prediction.</span></li>
+                    <li><span class="bullet-term">Affordability risk:</span> <span class="bullet-definition">Prices rising faster than incomes over long periods.</span></li>
+                </ul>
+            </div>
+
+            <div class="article-section">
+                <h3 class="section-title">Rent-to-Value Ratio</h3>
+                <ul class="bullet-list">
+                    <li><span class="bullet-term">Rent-to-value ratio:</span> <span class="bullet-definition">Monthly rent divided by property value.</span></li>
+                    <li><span class="bullet-term">High ratio:</span> <span class="bullet-definition">Indicates stronger cash flow potential.</span></li>
+                    <li><span class="bullet-term">Low ratio:</span> <span class="bullet-definition">Indicates appreciation-driven markets.</span></li>
+                </ul>
+            </div>
+
+            <div class="article-section">
+                <h3 class="section-title">Crime & Quality-of-Life</h3>
+                <ul class="bullet-list">
+                    <li><span class="bullet-term">Crime rate:</span> <span class="bullet-definition">Frequency of reported criminal activity.</span></li>
+                    <li><span class="bullet-term">Trend analysis:</span> <span class="bullet-definition">Whether crime is rising or falling over time.</span></li>
+                    <li><span class="bullet-term">Neighborhood trajectory:</span> <span class="bullet-definition">Direction a neighborhood is moving, not just its current state.</span></li>
+                </ul>
+            </div>
+
+            <div class="key-takeaways">
+                <h4 class="section-subtitle">Key Takeaways</h4>
+                <ul class="bullet-list">
+                    <li><span class="bullet-term">Demand drivers:</span> <span class="bullet-definition">People and income determine housing demand.</span></li>
+                    <li><span class="bullet-term">Sustainability:</span> <span class="bullet-definition">Growth must align with affordability.</span></li>
+                    <li><span class="bullet-term">Context matters:</span> <span class="bullet-definition">No single metric tells the full story.</span></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Article 3: Real Estate Law -->
+        <div id="article3" class="article-full">
+            <button class="back-button" onclick="showArticleList()">← Back to Learning Center</button>
+
+            <div class="article-header">
+                <div class="article-icon">⚖️</div>
+                <h2 class="section-title">Real Estate Law Basics: What Every Investor Should Understand</h2>
+            </div>
+
+            <div class="hero-summary">
+                <p>Legal structure and compliance affect risk, profitability, and scalability. This guide covers essential legal concepts every real estate investor should understand.</p>
+            </div>
+
+            <div class="article-section">
+                <h3 class="section-title">Ownership & Deeds</h3>
+                <ul class="bullet-list">
+                    <li><span class="bullet-term">Deed:</span> <span class="bullet-definition">Legal document showing ownership of real property.</span></li>
+                    <li><span class="bullet-term">Ownership structure:</span> <span class="bullet-definition">How legal title is held and managed.</span></li>
+                </ul>
+            </div>
+
+            <div class="article-section">
+                <h3 class="section-title">Individual Ownership</h3>
+                <ul class="bullet-list">
+                    <li><span class="bullet-term">Simplicity:</span> <span class="bullet-definition">Easiest structure to set up and finance.</span></li>
+                    <li><span class="bullet-term">Personal liability:</span> <span class="bullet-definition">Owner is personally responsible for lawsuits and debts.</span></li>
+                </ul>
+            </div>
+
+            <div class="article-section">
+                <h3 class="section-title">LLC Ownership</h3>
+                <ul class="bullet-list">
+                    <li><span class="bullet-term">Liability protection:</span> <span class="bullet-definition">Separates personal assets from property-related risk.</span></li>
+                    <li><span class="bullet-term">Administrative burden:</span> <span class="bullet-definition">Requires filings, fees, and record-keeping.</span></li>
+                    <li><span class="bullet-term">Financing friction:</span> <span class="bullet-definition">Some lenders charge higher rates or require guarantees.</span></li>
+                </ul>
+            </div>
+
+            <div class="article-section">
+                <h3 class="section-title">Joint Ownership</h3>
+                <ul class="bullet-list">
+                    <li><span class="bullet-term">Shared capital:</span> <span class="bullet-definition">Multiple owners contribute funds.</span></li>
+                    <li><span class="bullet-term">Decision risk:</span> <span class="bullet-definition">Disagreements can delay or derail decisions.</span></li>
+                    <li><span class="bullet-term">Exit complexity:</span> <span class="bullet-definition">Selling or separating ownership can be difficult.</span></li>
+                </ul>
+            </div>
+
+            <div class="article-section">
+                <h3 class="section-title">Landlord–Tenant Law</h3>
+                <ul class="bullet-list">
+                    <li><span class="bullet-term">Habitability:</span> <span class="bullet-definition">Legal requirement to provide safe and livable housing.</span></li>
+                    <li><span class="bullet-term">Security deposits:</span> <span class="bullet-definition">Funds held to cover damages or unpaid rent.</span></li>
+                    <li><span class="bullet-term">Eviction process:</span> <span class="bullet-definition">Legal procedure required to remove tenants.</span></li>
+                </ul>
+            </div>
+
+            <div class="article-section">
+                <h3 class="section-title">Zoning & Use Restrictions</h3>
+                <ul class="bullet-list">
+                    <li><span class="bullet-term">Zoning:</span> <span class="bullet-definition">Government rules controlling how land may be used.</span></li>
+                    <li><span class="bullet-term">Permitted use:</span> <span class="bullet-definition">Activities legally allowed on the property.</span></li>
+                    <li><span class="bullet-term">Nonconforming use:</span> <span class="bullet-definition">Existing use that no longer aligns with zoning rules.</span></li>
+                </ul>
+            </div>
+
+            <div class="article-section">
+                <h3 class="section-title">Common Legal Pitfalls</h3>
+                <ul class="bullet-list">
+                    <li><span class="bullet-term">Generic leases:</span> <span class="bullet-definition">Standard templates that ignore local law.</span></li>
+                    <li><span class="bullet-term">Improper screening:</span> <span class="bullet-definition">Failure to follow fair housing rules.</span></li>
+                    <li><span class="bullet-term">Commingling funds:</span> <span class="bullet-definition">Mixing personal and business finances.</span></li>
+                </ul>
+            </div>
+
+            <div class="key-takeaways">
+                <h4 class="section-subtitle">Key Takeaways</h4>
+                <ul class="bullet-list">
+                    <li><span class="bullet-term">Legal risk:</span> <span class="bullet-definition">Can outweigh financial risk if ignored.</span></li>
+                    <li><span class="bullet-term">Local rules:</span> <span class="bullet-definition">Often override state-level laws.</span></li>
+                    <li><span class="bullet-term">Structure matters:</span> <span class="bullet-definition">Ownership decisions affect long-term outcomes.</span></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="final-note">
+            Knowledge doesn't replace professionals — it helps you know when you need one.
+        </div>
+    </div>
+
+    <script>
+        // Article navigation
+        function showArticle(articleId) {
+            document.getElementById('articleList').style.display = 'none';
+            document.getElementById('article1').classList.remove('active');
+            document.getElementById('article2').classList.remove('active');
+            document.getElementById('article3').classList.remove('active');
+            document.getElementById(articleId).classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function showArticleList() {
+            document.getElementById('articleList').style.display = 'block';
+            document.getElementById('article1').classList.remove('active');
+            document.getElementById('article2').classList.remove('active');
+            document.getElementById('article3').classList.remove('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Dark mode toggle
+        function toggleDarkMode() {
+            const body = document.body;
+            const navIcon = document.getElementById('themeIconNav');
+
+            body.classList.toggle('dark-mode');
+
+            if (body.classList.contains('dark-mode')) {
+                if (navIcon) navIcon.textContent = '☀️';
+                localStorage.setItem('darkMode', 'enabled');
+            } else {
+                if (navIcon) navIcon.textContent = '🌙';
+                localStorage.setItem('darkMode', 'disabled');
+            }
+        }
+
+        // Load dark mode preference
+        const darkModePreference = localStorage.getItem('darkMode');
+        if (darkModePreference === 'enabled') {
+            document.body.classList.add('dark-mode');
+            const navIcon = document.getElementById('themeIconNav');
+            if (navIcon) navIcon.textContent = '☀️';
+        }
+
+        // Profile dropdown
+        function toggleProfileDropdown() {
+            const dropdown = document.getElementById('profileDropdown');
+            const button = document.querySelector('.profile-button');
+            dropdown.classList.toggle('show');
+            button.classList.toggle('active');
+        }
+
+        // Check authentication
+        async function checkAuth() {
+            try {
+                const response = await fetch('/api/auth/me', {
+                    credentials: 'include'
+                });
+                const data = await response.json();
+
+                if (data.user) {
+                    document.getElementById('authButtons').style.display = 'none';
+                    document.getElementById('userMenu').style.display = 'block';
+                    document.getElementById('usernameDisplay').textContent = data.user.email;
+                }
+            } catch (error) {
+                console.error('Auth check failed:', error);
+            }
+        }
+
+        // Logout
+        async function logout() {
+            try {
+                await fetch('/api/auth/logout', {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                window.location.href = '/';
+            } catch (error) {
+                console.error('Logout failed:', error);
+            }
+        }
+
+        // Initialize
+        checkAuth();
+    </script>
+</body>
+</html>
