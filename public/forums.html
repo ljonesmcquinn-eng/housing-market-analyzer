@@ -3,16 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Forums - Housing Market Analyzer</title>
+    <title>Forums - DeedIQ</title>
     <link rel="stylesheet" href="forums-style.css">
 </head>
 <body>
     <div class="navbar">
         <div class="nav-content">
-            <a href="/" class="logo">Housing Market Analyzer</a>
+            <a href="/" class="logo">DeedIQ</a>
             <div class="nav-links">
                 <a href="/">Market Analysis</a>
+                <a href="/?tool=calculator">Property Calculator</a>
                 <a href="/forums.html" class="active">Forums</a>
+                <button class="theme-toggle-btn" onclick="toggleDarkMode()" id="themeToggleBtn" title="Toggle dark mode">
+                    <span id="themeIconNav">🌙</span>
+                </button>
                 <div id="authButtons">
                     <a href="/login.html" class="btn-secondary">Log In</a>
                     <a href="/signup.html" class="btn-primary">Sign Up</a>
@@ -25,6 +29,7 @@
                     <div id="profileDropdown" class="dropdown-menu">
                         <a href="/dashboard.html" class="dropdown-item">📊 My Dashboard</a>
                         <a href="/saved.html" class="dropdown-item">❤️ Saved Content</a>
+                        <a href="/saved-properties.html" class="dropdown-item">🏠 Saved Properties</a>
                         <a href="/settings.html" class="dropdown-item">⚙️ Settings</a>
                         <div class="dropdown-divider"></div>
                         <a href="#" onclick="logout(); return false;" class="dropdown-item">🚪 Log Out</a>

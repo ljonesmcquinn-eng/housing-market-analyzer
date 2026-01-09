@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Housing Market Analyzer</title>
+    <title>DeedIQ - Real Estate Market Analysis & Investment Tools</title>
 
     <style>
         :root {
@@ -59,7 +59,7 @@
         .nav-content {
             max-width: 1400px;
             margin: 0 auto;
-            padding: 16px 32px;
+            padding: 12px 32px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -233,12 +233,45 @@
             background: rgba(255, 255, 255, 0.3);
         }
 
+        /* Small Theme Toggle Button in Navbar */
+        .theme-toggle-btn {
+            background: transparent;
+            border: 2px solid var(--border-light);
+            border-radius: 8px;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 8px;
+        }
+
+        .theme-toggle-btn:hover {
+            background: var(--bg-light);
+            transform: scale(1.05);
+        }
+
+        body.dark-mode .theme-toggle-btn {
+            border-color: var(--border-dark);
+        }
+
+        body.dark-mode .theme-toggle-btn:hover {
+            background: var(--surface-dark);
+        }
+
+        /* Hide old fixed theme toggle */
+        .theme-toggle {
+            display: none;
+        }
+
         /* Hero Section */
         .hero-section {
             background: linear-gradient(135deg, #0F2027 0%, #203A43 50%, #2C5364 100%);
-            padding: 100px 20px;
+            padding: 30px 20px;
             text-align: center;
-            margin-top: -40px;
+            margin-top: 0;
         }
 
         body.dark-mode .hero-section {
@@ -251,15 +284,15 @@
         }
 
         .hero-title {
-            font-size: 56px;
+            font-size: 32px;
             font-weight: 900;
             color: white;
-            margin-bottom: 20px;
+            margin-bottom: 12px;
             letter-spacing: -1px;
         }
 
         .hero-subtitle {
-            font-size: 20px;
+            font-size: 16px;
             color: rgba(255, 255, 255, 0.95);
             max-width: 700px;
             margin: 0 auto;
@@ -273,161 +306,207 @@
             padding: 0 20px;
         }
 
-        /* Feature Banners */
-        .feature-banners {
-            display: flex;
-            flex-direction: column;
-            gap: 0;
-            margin-top: -20px;
+        /* Features Banner */
+        .features-banner {
+            background: #FFFFFF;
+            padding: 24px 20px;
+            margin-top: 0;
         }
 
-        .feature-banner {
-            padding: 60px 80px;
-            position: relative;
-            overflow: hidden;
+        body.dark-mode .features-banner {
+            background: #1F2937;
         }
 
-        .banner-primary {
-            background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%);
-        }
-
-        .banner-success {
-            background: linear-gradient(135deg, #115E59 0%, #14B8A6 100%);
-        }
-
-        .banner-warning {
-            background: linear-gradient(135deg, #374151 0%, #6B7280 100%);
-        }
-
-        body.dark-mode .banner-primary {
-            background: linear-gradient(135deg, #1E3A8A 0%, #1E40AF 100%);
-        }
-
-        body.dark-mode .banner-success {
-            background: linear-gradient(135deg, #134E4A 0%, #0F766E 100%);
-        }
-
-        body.dark-mode .banner-warning {
-            background: linear-gradient(135deg, #1F2937 0%, #374151 100%);
-        }
-
-        .banner-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 60px;
+        .features-container {
             max-width: 1400px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .features-title {
+            font-size: 28px;
+            font-weight: 900;
+            color: #1F2937;
+            margin-bottom: 8px;
+        }
+
+        body.dark-mode .features-title {
+            color: #F9FAFB;
+        }
+
+        .features-subtitle {
+            font-size: 18px;
+            color: #6B7280;
+            margin-bottom: 60px;
+        }
+
+        body.dark-mode .features-subtitle {
+            color: #9CA3AF;
+        }
+
+        .feature-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 32px;
+            max-width: 1200px;
             margin: 0 auto;
         }
 
-        .banner-text {
-            flex: 1;
-            color: white;
-        }
-
-        .banner-title {
-            font-size: 36px;
-            font-weight: 800;
-            margin-bottom: 16px;
-            color: white;
-        }
-
-        .banner-description {
-            font-size: 18px;
-            line-height: 1.6;
-            opacity: 0.95;
-            margin-bottom: 24px;
-        }
-
-        .banner-features {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .feature-tag {
-            background: rgba(255, 255, 255, 0.2);
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: 600;
-            backdrop-filter: blur(10px);
-        }
-
-        .banner-action {
+        .feature-card {
+            background: var(--surface-light);
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
             display: flex;
             flex-direction: column;
-            gap: 16px;
-            min-width: 300px;
+            min-height: 280px;
         }
 
-        .banner-select {
-            padding: 16px 20px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
+        body.dark-mode .feature-card {
+            background: var(--surface-light);
             border-radius: 12px;
-            font-size: 16px;
-            font-weight: 600;
-            background: rgba(255, 255, 255, 0.95);
-            color: #333;
-            cursor: pointer;
+            padding: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
             transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            min-height: 280px;
         }
 
-        .banner-select:hover {
-            background: white;
-            border-color: rgba(255, 255, 255, 0.5);
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
         }
 
-        .banner-select:focus {
-            outline: none;
-            border-color: white;
-            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2);
+        .card-primary {
+            border-color: #3B82F6;
         }
 
-        .banner-btn {
-            padding: 16px 32px;
-            border: none;
-            border-radius: 12px;
-            font-size: 16px;
+        .card-primary:hover {
+            border-color: #1E40AF;
+            box-shadow: 0 20px 40px rgba(30, 58, 138, 0.2);
+        }
+
+        .card-success {
+            border-color: #14B8A6;
+        }
+
+        .card-success:hover {
+            border-color: #0F766E;
+            box-shadow: 0 20px 40px rgba(17, 94, 89, 0.2);
+        }
+
+        .card-forums {
+            border-color: #6B7280;
+        }
+
+        .card-forums:hover {
+            border-color: #374151;
+            box-shadow: 0 20px 40px rgba(55, 65, 81, 0.2);
+        }
+
+        .card-icon {
+            font-size: 56px;
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: 800;
+            color: #1F2937;
+            margin-bottom: 16px;
+        }
+
+        body.dark-mode .card-title {
+            color: #F9FAFB;
+        }
+
+        .card-description {
+            font-size: 14px;
+            color: #6B7280;
+            line-height: 1.6;
+            margin-bottom: 24px;
+            flex-grow: 1;
+        }
+
+        body.dark-mode .card-description {
+            color: #9CA3AF;
+        }
+
+        .card-features {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 32px 0;
+            text-align: left;
+        }
+
+        .card-features li {
+            padding: 8px 0;
+            color: #374151;
+            font-size: 14px;
+            border-bottom: 1px solid #E5E7EB;
+        }
+
+        body.dark-mode .card-features li {
+            color: #D1D5DB;
+            border-bottom-color: #4B5563;
+        }
+
+        .card-features li:last-child {
+            border-bottom: none;
+        }
+
+        .card-features li:before {
+            content: "✓ ";
+            color: #10B981;
             font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            margin-right: 8px;
         }
 
-        .banner-btn:hover {
+        
+        .card-btn {
+            display: inline-block;
+            padding: 14px 32px;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-family: inherit;
+            width: auto;
+        }
+
+        .card-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
         }
 
         .btn-primary {
-            background: white;
-            color: #1E3A8A;
+            background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%);
+            color: white;
         }
 
         .btn-success {
-            background: white;
-            color: #115E59;
+            background: linear-gradient(135deg, #115E59 0%, #14B8A6 100%);
+            color: white;
         }
 
-        .btn-warning {
-            background: white;
-            color: #374151;
+        .btn-forums {
+            background: linear-gradient(135deg, #374151 0%, #6B7280 100%);
+            color: white;
         }
 
         @media (max-width: 1024px) {
-            .banner-content {
-                flex-direction: column;
-                gap: 40px;
+            .feature-cards {
+                grid-template-columns: 1fr;
+                max-width: 500px;
             }
 
-            .banner-action {
-                width: 100%;
-                max-width: 400px;
-            }
-
-            .feature-banner {
-                padding: 40px 40px;
+            .features-title {
+                font-size: 36px;
             }
 
             .hero-title {
@@ -435,18 +514,34 @@
             }
 
             .hero-subtitle {
-                font-size: 18px;
-            }
-
-            .banner-title {
-                font-size: 28px;
+            font-size: 16px;
             }
         }
 
         @media (max-width: 768px) {
-            .feature-banner {
-                padding: 30px 20px;
+            .features-banner {
+                padding: 60px 20px;
             }
+
+            .features-title {
+            font-size: 28px;
+            }
+
+            .features-subtitle {
+                font-size: 16px;
+                margin-bottom: 40px;
+            }
+
+            .feature-card {
+            background: var(--surface-light);
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            min-height: 280px;
+        }
 
             .hero-section {
                 padding: 60px 20px;
@@ -457,14 +552,6 @@
             }
 
             .hero-subtitle {
-                font-size: 16px;
-            }
-
-            .banner-title {
-                font-size: 24px;
-            }
-
-            .banner-description {
                 font-size: 16px;
             }
         }
@@ -1485,10 +1572,14 @@
     <!-- Navigation Bar -->
     <div class="navbar">
         <div class="nav-content">
-            <a href="/" class="logo">Housing Market Analyzer</a>
+            <a href="/" class="logo">DeedIQ</a>
             <div class="nav-links">
                 <a href="/" class="active">Market Analysis</a>
+                <a href="/?tool=calculator">Property Calculator</a>
                 <a href="/forums.html">Forums</a>
+                <button class="theme-toggle-btn" onclick="toggleDarkMode()" id="themeToggleBtn" title="Toggle dark mode">
+                    <span id="themeIconNav">🌙</span>
+                </button>
                 <div id="authButtons">
                     <a href="/login.html" class="btn-secondary-nav">Log In</a>
                     <a href="/signup.html" class="btn-primary-nav">Sign Up</a>
@@ -1508,6 +1599,8 @@
                     </div>
                 </div>
             </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -1520,8 +1613,8 @@
     <!-- Hero Section -->
     <div class="hero-section">
         <div class="hero-content">
-            <h1 class="hero-title">Housing Market Analyzer</h1>
-            <p class="hero-subtitle">Make informed real estate investment decisions with comprehensive market data and analytics</p>
+            <h1 class="hero-title">DeedIQ</h1>
+            <p class="hero-subtitle">Smart Real Estate Analysis & Investment Tools for Data-Driven Decisions</p>
         </div>
     </div>
 
@@ -1540,70 +1633,80 @@
             </div>
         </div>
 
-        <!-- Feature Banners -->
-        <div class="feature-banners">
-            <!-- Market Analysis Banner -->
-            <div class="feature-banner banner-primary">
-                <div class="banner-content">
-                    <div class="banner-text">
-                        <h2 class="banner-title">Market Analysis</h2>
-                        <p class="banner-description">Explore demographic trends, population growth, income levels, and property values across Tennessee markets</p>
-                        <div class="banner-features">
-                            <span class="feature-tag">📊 Historical Data</span>
-                            <span class="feature-tag">📈 Growth Metrics</span>
-                            <span class="feature-tag">🗺️ Submarket Analysis</span>
-                        </div>
-                    </div>
-                    <div class="banner-action">
-                        <select id="citySelect" class="banner-select">
-                            <option value="">Select a market...</option>
-                        </select>
-                        <button onclick="analyzeMarket()" id="analyzeBtn" class="banner-btn btn-primary">
-                            Analyze Market →
-                        </button>
-                    </div>
-                </div>
-            </div>
+        <!-- Feature Options Banner -->
+        <div class="features-banner">
+            <div class="features-container">
+                <h2 class="features-title">Choose Your Tool</h2>
+                <p class="features-subtitle">Select from our comprehensive suite of real estate investment tools</p>
 
-            <!-- Property Calculator Banner -->
-            <div class="feature-banner banner-success">
-                <div class="banner-content">
-                    <div class="banner-text">
-                        <h2 class="banner-title">Property Investment Calculator</h2>
-                        <p class="banner-description">Calculate cash flow, cash-on-cash returns, cap rates, and detailed financial projections for rental properties</p>
-                        <div class="banner-features">
-                            <span class="feature-tag">💰 Cash Flow Analysis</span>
-                            <span class="feature-tag">📉 Cap Rate & CoC</span>
-                            <span class="feature-tag">💾 Save Properties</span>
-                        </div>
+                <div class="feature-cards">
+                    <!-- Market Analysis Card -->
+                    <div class="feature-card card-primary">
+                        <div class="card-icon">📊</div>
+                        <h3 class="card-title">Market Analysis</h3>
+                        <p class="card-description">Explore demographic trends, population growth, income levels, and property values</p>
+                        <ul class="card-features">
+                            <li>Historical Data & Trends</li>
+                            <li>Growth Metrics</li>
+                            <li>Submarket Analysis</li>
+                        </ul>
+                        <button onclick="scrollToMarketSelector()" class="card-btn btn-primary" style="border: none; cursor: pointer;">Analyze Markets →</button>
                     </div>
-                    <div class="banner-action">
-                        <button onclick="showPropertyAnalysis()" class="banner-btn btn-success">
-                            Launch Calculator →
-                        </button>
-                    </div>
-                </div>
-            </div>
 
-            <!-- Community Forums Banner -->
-            <div class="feature-banner banner-warning">
-                <div class="banner-content">
-                    <div class="banner-text">
-                        <h2 class="banner-title">Community Forums</h2>
-                        <p class="banner-description">Connect with real estate investors, share strategies, discuss markets, and get advice from experienced professionals</p>
-                        <div class="banner-features">
-                            <span class="feature-tag">💬 Discussions</span>
-                            <span class="feature-tag">🤝 Professional Network</span>
-                            <span class="feature-tag">💡 Investment Tips</span>
-                        </div>
+                    <!-- Property Calculator Card -->
+                    <div class="feature-card card-success">
+                        <div class="card-icon">💰</div>
+                        <h3 class="card-title">Investment Calculator</h3>
+                        <p class="card-description">Calculate cash flow, returns, and detailed financial projections for rental properties</p>
+                        <ul class="card-features">
+                            <li>Cash Flow Analysis</li>
+                            <li>Cap Rate & CoC Returns</li>
+                            <li>Save Property Data</li>
+                        </ul>
+                        <button onclick="showPropertyAnalysis()" class="card-btn btn-success" style="border: none; cursor: pointer;">Launch Calculator →</button>
                     </div>
-                    <div class="banner-action">
-                        <button onclick="window.location.href='/forums.html'" class="banner-btn btn-warning">
-                            Join Community →
-                        </button>
+
+                    <!-- Community Forums Card -->
+                    <div class="feature-card card-forums">
+                        <div class="card-icon">💬</div>
+                        <h3 class="card-title">Community Forums</h3>
+                        <p class="card-description">Connect with investors, share strategies, and get advice from experienced professionals</p>
+                        <ul class="card-features">
+                            <li>Discussion Boards</li>
+                            <li>Professional Network</li>
+                            <li>Investment Tips & Advice</li>
+                        </ul>
+                        <a href="/forums.html" class="card-btn btn-forums">Join Community →</a>
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+
+
+    <!-- Market Selection Interface -->
+    <div class="container" style="margin-top: 40px; max-width: 800px;" id="marketSelector">
+        <div style="text-align: center; margin-bottom: 40px;">
+            <h2 style="font-size: 36px; font-weight: 800; color: var(--primary); margin-bottom: 16px;">Analyze a Market</h2>
+            <p style="color: var(--text-secondary-light); font-size: 16px;">Select a Tennessee city to view comprehensive market data and trends</p>
+        </div>
+
+        <div style="max-width: 500px; margin: 0 auto;">
+            <label style="display: block; margin-bottom: 12px; font-weight: 600; color: var(--text-light); font-size: 15px;">Choose City:</label>
+            <select id="citySelect" style="width: 100%; padding: 14px 20px; font-size: 16px; border: 2px solid var(--border-light); border-radius: 12px; background: var(--surface-light); color: var(--text-light); cursor: pointer; transition: all 0.3s ease; font-family: inherit;">
+                <option value="">-- Select a city --</option>
+            </select>
+            
+            <button onclick="analyzeMarket()" style="width: 100%; margin-top: 24px; padding: 16px 32px; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);">
+                Analyze Market →
+            </button>
+        </div>
+
+        <div style="text-align: center; margin-top: 48px; padding-top: 32px; border-top: 2px solid var(--border-light);">
+            <p style="color: var(--text-secondary-light); font-size: 14px; margin-bottom: 16px;">Or access the Property Investment Calculator directly:</p>
+            <button onclick="showPropertyAnalysis()" style="display: inline-block; padding: 12px 32px; background: var(--secondary); color: white; text-decoration: none; border-radius: 10px; font-weight: 600; transition: all 0.3s ease; border: none; cursor: pointer;">
+                Open Property Calculator →
+            </button>
         </div>
     </div>
 
@@ -1617,7 +1720,7 @@
 
         <div id="error" class="error-message" style="display: none;"></div>
 
-        <div class="results" id="marketResults">
+        <div class="results" id="marketResults" style="display: none;">
             <div class="market-header">
                 <h2 class="market-title" id="marketTitle">-</h2>
                 <div>
@@ -1700,7 +1803,7 @@
             </div>
         </div>
 
-        <div class="results" id="submarketResults">
+        <div class="results" id="submarketResults" style="display: none;">
             <div class="market-header">
                 <h2 class="market-title" id="submarketTitle">-</h2>
                 <button class="back-button" onclick="backToMarket()">← Back to Market View</button>
@@ -1741,7 +1844,7 @@
             <div class="submarket-list" id="submarketList"></div>
         </div>
 
-        <div class="results" id="comparisonResults">
+        <div class="results" id="comparisonResults" style="display: none;">
             <div class="market-header">
                 <h2 class="market-title">Market Comparison</h2>
                 <button class="back-button" onclick="resetView()">← Back to Selection</button>
@@ -1773,7 +1876,7 @@
             </div>
         </div>
 
-        <div class="results" id="propertyAnalysisResults">
+        <div class="results" id="propertyAnalysisResults" style="display: none;">
             <div class="market-header">
                 <h2 class="market-title">Property Investment Analyzer</h2>
                 <button class="back-button" onclick="resetView()">← Back to Selection</button>
@@ -2317,16 +2420,19 @@
             const body = document.body;
             const icon = document.getElementById('themeIcon');
             const text = document.getElementById('themeText');
+            const navIcon = document.getElementById('themeIconNav');
 
             body.classList.toggle('dark-mode');
 
             if (body.classList.contains('dark-mode')) {
-                icon.textContent = '☀️';
-                text.textContent = 'Light Mode';
+                if (icon) icon.textContent = '☀️';
+                if (text) text.textContent = 'Light Mode';
+                if (navIcon) navIcon.textContent = '☀️';
                 localStorage.setItem('darkMode', 'enabled');
             } else {
-                icon.textContent = '🌙';
-                text.textContent = 'Dark Mode';
+                if (icon) icon.textContent = '🌙';
+                if (text) text.textContent = 'Dark Mode';
+                if (navIcon) navIcon.textContent = '🌙';
                 localStorage.setItem('darkMode', 'disabled');
             }
         }
@@ -2452,6 +2558,14 @@
         }
 
         function displayMarketData(market) {
+            // Hide market selector and show results
+            document.getElementById('marketSelector').style.display = 'none';
+            document.querySelector('.features-banner').style.display = 'none';
+            document.getElementById('marketResults').style.display = 'block';
+            document.getElementById('submarketResults').style.display = 'none';
+            document.getElementById('comparisonResults').style.display = 'none';
+            document.getElementById('propertyAnalysisResults').style.display = 'none';
+
             document.getElementById('marketTitle').textContent = `${market.name}, ${market.state}`;
 
             // Display current values
@@ -2667,6 +2781,12 @@
         }
 
         async function displaySubmarkets(submarkets) {
+            // Hide other sections, show submarkets
+            document.getElementById('marketResults').style.display = 'none';
+            document.getElementById('submarketResults').style.display = 'block';
+            document.getElementById('comparisonResults').style.display = 'none';
+            document.getElementById('propertyAnalysisResults').style.display = 'none';
+
             console.log('displaySubmarkets called with', submarkets.length, 'submarkets');
 
             // Show map loading indicator
@@ -3086,6 +3206,10 @@
 
 
         function backToMarket() {
+            document.getElementById('submarketResults').style.display = 'none';
+            document.getElementById('marketResults').style.display = 'block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
             document.getElementById('submarketResults').classList.remove('visible');
             document.getElementById('marketResults').classList.add('visible');
         }
@@ -3100,14 +3224,21 @@
             currentSubmarkets = null;
         }
 
-        function showPropertyAnalysis() {
-            document.getElementById('marketResults').classList.remove('visible');
-            document.getElementById('submarketResults').classList.remove('visible');
-            document.getElementById('comparisonResults').classList.remove('visible');
-            document.getElementById('propertyAnalysisResults').classList.add('visible');
+        
+        function scrollToMarketSelector() {
+            const selector = document.getElementById('marketSelector');
+            selector.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            // Highlight the dropdown briefly
+            const dropdown = document.getElementById('citySelect');
+            dropdown.style.borderColor = 'var(--primary)';
+            dropdown.style.boxShadow = '0 0 0 3px rgba(79, 70, 229, 0.2)';
+            setTimeout(() => {
+                dropdown.style.borderColor = '';
+                dropdown.style.boxShadow = '';
+            }, 2000);
         }
 
-        function switchRentalType(type) {
+function switchRentalType(type) {
             if (type === 'longTerm') {
                 document.getElementById('longTermBtn').classList.add('active');
                 document.getElementById('shortTermBtn').classList.remove('active');
@@ -3673,6 +3804,15 @@
 
         // Comparison View
         async function showComparison() {
+            document.querySelector('.features-banner').style.display = 'none';
+            // Hide other sections
+            document.getElementById('marketSelector').style.display = 'none';
+            document.getElementById('marketResults').style.display = 'none';
+            document.getElementById('submarketResults').style.display = 'none';
+            document.getElementById('propertyAnalysisResults').style.display = 'none';
+            // Show comparison
+            document.getElementById('comparisonResults').style.display = 'block';
+
             if (bookmarkedMarkets.length < 2) {
                 alert('Please bookmark at least 2 markets to compare');
                 return;
@@ -3883,6 +4023,48 @@
                 const displayValue = isDollar ? '$' + Math.round(value).toLocaleString() : Math.round(value).toLocaleString();
                 ctx.fillText(displayValue, padding - 10, y + 4);
             }
+        }
+
+        
+        function showPropertyAnalysis() {
+            document.querySelector('.features-banner').style.display = 'none';
+            // Hide all other sections
+            document.getElementById('marketSelector').style.display = 'none';
+            document.getElementById('marketResults').style.display = 'none';
+            document.getElementById('submarketResults').style.display = 'none';
+            document.getElementById('comparisonResults').style.display = 'none';
+            
+            // Show property analysis
+            document.getElementById('propertyAnalysisResults').style.display = 'block';
+            
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function resetView() {
+            // Show features banner
+            document.querySelector('.features-banner').style.display = 'block';
+            // Hide all results
+            document.getElementById('marketResults').style.display = 'none';
+            document.getElementById('submarketResults').style.display = 'none';
+            document.getElementById('comparisonResults').style.display = 'none';
+            document.getElementById('propertyAnalysisResults').style.display = 'none';
+            
+            // Show market selector
+            document.getElementById('marketSelector').style.display = 'block';
+            
+            // Reset city selection
+            document.getElementById('citySelect').value = '';
+            
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        
+        // Check URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('tool') === 'calculator') {
+            showPropertyAnalysis();
         }
 
         // Initialize

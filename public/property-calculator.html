@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Property Investment Calculator - DeedIQ</title>
+    <style>
+        :root {
+            --primary: #4F46E5;
+            --primary-dark: #4338CA;
+            --secondary: #10B981;
+            --bg-light: #F9FAFB;
+            --bg-dark: #111827;
+            --surface-light: #FFFFFF;
+            --surface-dark: #1F2937;
+            --text-light: #111827;
+            --text-dark: #F9FAFB;
+            --text-secondary-light: #6B7280;
+            --text-secondary-dark: #9CA3AF;
+            --border-light: #E5E7EB;
+            --border-dark: #374151;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            min-height: 100vh;
+            padding: 0;
+        }
+
+        body.dark-mode {
+            background: linear-gradient(135deg, #0F2027 0%, #203A43 50%, #2C5364 100%);
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        body.dark-mode .navbar {
+            background: rgba(31, 41, 55, 0.95);
+        }
+
+        .nav-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 16px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-secondary-light);
+            font-weight: 600;
+            transition: color 0.3s ease;
+            font-size: 14px;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--primary);
+        }
+
+        .btn-secondary-nav, .btn-primary-nav {
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+            font-size: 13px;
+        }
+
+        .btn-primary-nav {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+        }
+
+        .btn-secondary-nav {
+            background: var(--surface-light);
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .theme-toggle-btn {
+            background: transparent;
+            border: 2px solid var(--border-light);
+            border-radius: 8px;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 8px;
+        }
+
+        .theme-toggle-btn:hover {
+            background: var(--bg-light);
+            transform: scale(1.05);
+        }
+
+        body.dark-mode .theme-toggle-btn {
+            border-color: var(--border-dark);
+        }
+
+        body.dark-mode .theme-toggle-btn:hover {
+            background: var(--surface-dark);
+        }
+
+        .profile-menu {
+            position: relative;
+        }
+
+        .profile-button {
+            background: var(--surface-light);
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            background: var(--surface-light);
+            border: 2px solid var(--border-light);
+            border-radius: 12px;
+            min-width: 200px;
+            display: none;
+            z-index: 1000;
+        }
+
+        .dropdown-menu.show {
+            display: block;
+        }
+
+        .dropdown-item {
+            display: block;
+            padding: 12px 16px;
+            color: var(--text-light);
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: var(--border-light);
+            margin: 4px 0;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 80px auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            box-shadow: 0 25px 80px rgba(0,0,0,0.2);
+            padding: 64px;
+            text-align: center;
+        }
+
+        body.dark-mode .container {
+            background: rgba(31, 41, 55, 0.95);
+        }
+
+        h1 {
+            font-size: 48px;
+            font-weight: 900;
+            color: var(--primary);
+            margin-bottom: 24px;
+        }
+
+        body.dark-mode h1 {
+            color: #60A5FA;
+        }
+
+        .subtitle {
+            font-size: 20px;
+            color: var(--text-secondary-light);
+            margin-bottom: 48px;
+            line-height: 1.6;
+        }
+
+        body.dark-mode .subtitle {
+            color: var(--text-secondary-dark);
+        }
+
+        .feature-list {
+            text-align: left;
+            margin: 40px auto;
+            max-width: 600px;
+        }
+
+        .feature-list li {
+            font-size: 16px;
+            color: var(--text-light);
+            margin-bottom: 16px;
+            padding-left: 8px;
+        }
+
+        body.dark-mode .feature-list li {
+            color: var(--text-dark);
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 18px 48px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 18px;
+            box-shadow: 0 8px 24px rgba(79, 70, 229, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(79, 70, 229, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <div class="navbar">
+        <div class="nav-content">
+            <a href="/" class="logo">DeedIQ</a>
+            <div class="nav-links">
+                <a href="/">Market Analysis</a>
+                <a href="/property-calculator.html" class="active">Property Calculator</a>
+                <a href="/forums.html">Forums</a>
+                <button class="theme-toggle-btn" onclick="toggleDarkMode()" id="themeToggleBtn" title="Toggle dark mode">
+                    <span id="themeIconNav">🌙</span>
+                </button>
+                <div id="authButtons">
+                    <a href="/login.html" class="btn-secondary-nav">Log In</a>
+                    <a href="/signup.html" class="btn-primary-nav">Sign Up</a>
+                </div>
+                <div id="userMenu" class="profile-menu" style="display: none;">
+                    <button class="profile-button" onclick="toggleProfileDropdown()">
+                        <span id="usernameDisplay"></span>
+                        <span class="dropdown-arrow">▼</span>
+                    </button>
+                    <div id="profileDropdown" class="dropdown-menu">
+                        <a href="/dashboard.html" class="dropdown-item">📊 My Dashboard</a>
+                        <a href="/saved.html" class="dropdown-item">❤️ Saved Content</a>
+                        <a href="/saved-properties.html" class="dropdown-item">🏠 Saved Properties</a>
+                        <a href="/settings.html" class="dropdown-item">⚙️ Settings</a>
+                        <div class="dropdown-divider"></div>
+                        <a href="#" onclick="logout(); return false;" class="dropdown-item">🚪 Log Out</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <h1>💰 Property Investment Calculator</h1>
+        <p class="subtitle">Comprehensive cash flow analysis and return calculations for rental properties</p>
+
+        <ul class="feature-list">
+            <li>✓ Calculate maximum purchase price based on target yields (IRR or Cash-on-Cash)</li>
+            <li>✓ Detailed cash flow projections with customizable financing options</li>
+            <li>✓ Support for Fixed Rate and ARM (Adjustable Rate Mortgages)</li>
+            <li>✓ Operating expense modeling (taxes, insurance, CapEx, maintenance)</li>
+            <li>✓ Long-term and short-term rental analysis</li>
+            <li>✓ Integrate with Rentcast.io for accurate rent estimates</li>
+        </ul>
+
+        <p class="subtitle" style="margin-top: 48px; margin-bottom: 32px;">
+            Click below to access the full Property Investment Calculator with all features.
+        </p>
+
+        <a href="/?tool=calculator" class="cta-button">Launch Calculator →</a>
+    </div>
+
+    <script>
+        // Dark mode toggle
+        function toggleDarkMode() {
+            const body = document.body;
+            const navIcon = document.getElementById('themeIconNav');
+
+            body.classList.toggle('dark-mode');
+
+            if (body.classList.contains('dark-mode')) {
+                if (navIcon) navIcon.textContent = '☀️';
+                localStorage.setItem('darkMode', 'enabled');
+            } else {
+                if (navIcon) navIcon.textContent = '🌙';
+                localStorage.setItem('darkMode', 'disabled');
+            }
+        }
+
+        // Load dark mode preference
+        const darkModePreference = localStorage.getItem('darkMode');
+        if (darkModePreference === 'enabled') {
+            document.body.classList.add('dark-mode');
+            const navIcon = document.getElementById('themeIconNav');
+            if (navIcon) navIcon.textContent = '☀️';
+        }
+
+        // Profile dropdown
+        function toggleProfileDropdown() {
+            const dropdown = document.getElementById('profileDropdown');
+            const button = document.querySelector('.profile-button');
+            dropdown.classList.toggle('show');
+            button.classList.toggle('active');
+        }
+
+        // Check authentication
+        async function checkAuth() {
+            try {
+                const response = await fetch('/api/auth/me', {
+                    credentials: 'include'
+                });
+                const data = await response.json();
+
+                if (data.user) {
+                    document.getElementById('authButtons').style.display = 'none';
+                    document.getElementById('userMenu').style.display = 'block';
+                    document.getElementById('usernameDisplay').textContent = data.user.email;
+                }
+            } catch (error) {
+                console.error('Auth check failed:', error);
+            }
+        }
+
+        // Logout
+        async function logout() {
+            try {
+                await fetch('/api/auth/logout', {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                window.location.href = '/';
+            } catch (error) {
+                console.error('Logout failed:', error);
+            }
+        }
+
+        // Initialize
+        checkAuth();
+    </script>
+</body>
+</html>

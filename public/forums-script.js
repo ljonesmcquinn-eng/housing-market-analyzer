@@ -385,3 +385,27 @@ async function toggleLike(postId, button) {
         console.error('Error toggling like:', error);
     }
 }
+
+// Dark mode toggle function
+function toggleDarkMode() {
+    const body = document.body;
+    const navIcon = document.getElementById('themeIconNav');
+    
+    body.classList.toggle('dark-mode');
+    
+    if (body.classList.contains('dark-mode')) {
+        if (navIcon) navIcon.textContent = '☀️';
+        localStorage.setItem('darkMode', 'enabled');
+    } else {
+        if (navIcon) navIcon.textContent = '🌙';
+        localStorage.setItem('darkMode', 'disabled');
+    }
+}
+
+// Load dark mode preference on page load
+const darkModePreference = localStorage.getItem('darkMode');
+if (darkModePreference === 'enabled') {
+    document.body.classList.add('dark-mode');
+    const navIcon = document.getElementById('themeIconNav');
+    if (navIcon) navIcon.textContent = '☀️';
+}

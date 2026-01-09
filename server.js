@@ -77,7 +77,7 @@ async function start() {
         console.log('✅ Database initialized');
 
         app.listen(PORT, () => {
-            console.log(`\n🚀 Housing Market Analyzer running at http://localhost:${PORT}`);
+            console.log(`\n🚀 DeedIQ running at http://localhost:${PORT}`);
             console.log(`   API endpoints:`);
             console.log(`   - GET /api/markets`);
             console.log(`   - GET /api/markets/:city`);
