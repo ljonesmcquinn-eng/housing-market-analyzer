@@ -9,6 +9,7 @@ const apiRoutes = require('./routes/api');
 const authRoutes = require('./routes/auth');
 const forumRoutes = require('./routes/forum');
 const propertiesRoutes = require('./routes/properties');
+const chatRoutes = require('./routes/chat');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -47,6 +48,7 @@ app.use('/api', apiRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/forum', forumRoutes);
 app.use('/api/properties', propertiesRoutes);
+app.use('/api/chat', chatRoutes);
 
 // Serve frontend
 app.get('/', (req, res) => {
