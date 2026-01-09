@@ -2649,14 +2649,14 @@
 
             // Get parent container width for responsive sizing
             const container = canvas.parentElement;
-            const containerWidth = container.offsetWidth - 50; // Account for padding
+            const containerWidth = container.offsetWidth - 50;
 
             canvas.width = containerWidth > 0 ? containerWidth : 800;
-            canvas.height = 300;
+            canvas.height = 350; // Increased height for labels
 
             const width = canvas.width;
             const height = canvas.height;
-            const padding = 60;
+            const padding = 70; // Increased padding for grid labels
             const chartWidth = width - 2 * padding;
             const chartHeight = height - 2 * padding;
 
@@ -2688,8 +2688,30 @@
                     changeElement.className = `chart-change ${className}`;
                 }
             }
+            
             const minValue = Math.min(...values) * 0.9;
             const maxValue = Math.max(...values) * 1.1;
+
+            // Draw horizontal grid lines
+            ctx.strokeStyle = '#e0e0e0';
+            ctx.lineWidth = 1;
+            const ySteps = 5;
+            for (let i = 0; i <= ySteps; i++) {
+                const y = height - padding - (i / ySteps) * chartHeight;
+                ctx.beginPath();
+                ctx.moveTo(padding, y);
+                ctx.lineTo(width - padding, y);
+                ctx.stroke();
+            }
+
+            // Draw vertical grid lines
+            data.forEach((point, index) => {
+                const x = padding + (index / (data.length - 1)) * chartWidth;
+                ctx.beginPath();
+                ctx.moveTo(x, padding);
+                ctx.lineTo(x, height - padding);
+                ctx.stroke();
+            });
 
             // Draw axes
             ctx.strokeStyle = '#333';
@@ -2700,47 +2722,60 @@
             ctx.lineTo(width - padding, height - padding);
             ctx.stroke();
 
-            // Draw line
-            ctx.strokeStyle = '#764ba2';
+            // Draw color-coded line segments (green for growth, red for decline)
             ctx.lineWidth = 3;
-            ctx.beginPath();
-
             data.forEach((point, index) => {
-                const x = padding + (index / (data.length - 1)) * chartWidth;
-                const y = height - padding - ((values[index] - minValue) / (maxValue - minValue)) * chartHeight;
+                if (index === 0) return; // Skip first point
 
-                if (index === 0) {
-                    ctx.moveTo(x, y);
-                } else {
-                    ctx.lineTo(x, y);
-                }
-            });
-            ctx.stroke();
+                const x1 = padding + ((index - 1) / (data.length - 1)) * chartWidth;
+                const y1 = height - padding - ((values[index - 1] - minValue) / (maxValue - minValue)) * chartHeight;
+                const x2 = padding + (index / (data.length - 1)) * chartWidth;
+                const y2 = height - padding - ((values[index] - minValue) / (maxValue - minValue)) * chartHeight;
 
-            // Draw points
-            ctx.fillStyle = '#764ba2';
-            data.forEach((point, index) => {
-                const x = padding + (index / (data.length - 1)) * chartWidth;
-                const y = height - padding - ((values[index] - minValue) / (maxValue - minValue)) * chartHeight;
+                // Determine color based on growth or decline
+                const isGrowth = values[index] >= values[index - 1];
+                ctx.strokeStyle = isGrowth ? '#10B981' : '#EF4444'; // Green for growth, red for decline
 
                 ctx.beginPath();
-                ctx.arc(x, y, 5, 0, 2 * Math.PI);
-                ctx.fill();
+                ctx.moveTo(x1, y1);
+                ctx.lineTo(x2, y2);
+                ctx.stroke();
             });
 
-            // Labels
+            // Draw points and value labels
+            ctx.font = 'bold 11px sans-serif';
+            data.forEach((point, index) => {
+                const x = padding + (index / (data.length - 1)) * chartWidth;
+                const y = height - padding - ((values[index] - minValue) / (maxValue - minValue)) * chartHeight;
+
+                // Draw point
+                ctx.fillStyle = '#4F46E5';
+                ctx.beginPath();
+                ctx.arc(x, y, 6, 0, 2 * Math.PI);
+                ctx.fill();
+
+                // Add white border to point
+                ctx.strokeStyle = '#fff';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                // Draw value label above point
+                const displayValue = isDollar ? '$' + Math.round(values[index]).toLocaleString() : Math.round(values[index]).toLocaleString();
+                ctx.fillStyle = '#333';
+                ctx.textAlign = 'center';
+                ctx.fillText(displayValue, x, y - 15);
+            });
+
+            // X-axis labels (years)
             ctx.fillStyle = '#333';
             ctx.font = '12px sans-serif';
             ctx.textAlign = 'center';
-
-            // X-axis labels
             years.forEach((year, index) => {
                 const x = padding + (index / (data.length - 1)) * chartWidth;
                 ctx.fillText(year, x, height - padding + 20);
             });
 
             // Y-axis labels
-            const ySteps = 5;
             ctx.textAlign = 'right';
             for (let i = 0; i <= ySteps; i++) {
                 const value = minValue + (i / ySteps) * (maxValue - minValue);
@@ -3904,7 +3939,7 @@ function switchRentalType(type) {
             const containerWidth = container.offsetWidth - 50;
 
             canvas.width = containerWidth > 0 ? containerWidth : 800;
-            canvas.height = 300;
+            canvas.height = 350; // Increased for labels
 
             const width = canvas.width;
             const height = canvas.height;
@@ -3941,6 +3976,27 @@ function switchRentalType(type) {
             const minValue = Math.min(...allValues) * 0.9;
             const maxValue = Math.max(...allValues) * 1.1;
 
+            // Draw horizontal grid lines
+            ctx.strokeStyle = '#e0e0e0';
+            ctx.lineWidth = 1;
+            const gridYSteps = 5;
+            for (let i = 0; i <= gridYSteps; i++) {
+                const y = height - padding - (i / gridYSteps) * chartHeight;
+                ctx.beginPath();
+                ctx.moveTo(padding, y);
+                ctx.lineTo(width - padding, y);
+                ctx.stroke();
+            }
+
+            // Draw vertical grid lines
+            years.forEach((year, index) => {
+                const x = padding + (index / (years.length - 1)) * chartWidth;
+                ctx.beginPath();
+                ctx.moveTo(x, padding);
+                ctx.lineTo(x, height - padding);
+                ctx.stroke();
+            });
+
             // Draw axes
             ctx.strokeStyle = '#333';
             ctx.lineWidth = 2;
@@ -3959,17 +4015,17 @@ function switchRentalType(type) {
                 if (!data) return;
 
                 const color = colors[cityIndex % colors.length];
-                ctx.strokeStyle = color;
-                ctx.fillStyle = color;
                 ctx.lineWidth = 3;
-                ctx.beginPath();
 
-                let firstPoint = true;
                 let firstValue = null;
                 let lastValue = null;
                 let lastX = 0;
                 let lastY = 0;
+                let prevValue = null;
+                let prevX = 0;
+                let prevY = 0;
 
+                // Draw color-coded segments
                 years.forEach((year, yearIndex) => {
                     const value = data[year];
                     if (value === undefined) return;
@@ -3977,12 +4033,23 @@ function switchRentalType(type) {
                     const x = padding + (yearIndex / (years.length - 1)) * chartWidth;
                     const y = height - padding - ((value - minValue) / (maxValue - minValue)) * chartHeight;
 
-                    if (firstPoint) {
-                        ctx.moveTo(x, y);
-                        firstPoint = false;
+                    if (firstValue === null) {
                         firstValue = value;
+                        prevValue = value;
+                        prevX = x;
+                        prevY = y;
                     } else {
+                        // Draw segment with color based on growth/decline
+                        const isGrowth = value >= prevValue;
+                        ctx.strokeStyle = isGrowth ? '#10B981' : '#EF4444';
+                        ctx.beginPath();
+                        ctx.moveTo(prevX, prevY);
                         ctx.lineTo(x, y);
+                        ctx.stroke();
+
+                        prevValue = value;
+                        prevX = x;
+                        prevY = y;
                     }
 
                     lastValue = value;
@@ -3990,13 +4057,17 @@ function switchRentalType(type) {
                     lastY = y;
 
                     // Draw point
+                    ctx.fillStyle = color;
                     ctx.beginPath();
-                    ctx.arc(x, y, 4, 0, 2 * Math.PI);
+                    ctx.arc(x, y, 5, 0, 2 * Math.PI);
                     ctx.fill();
-                    ctx.beginPath();
+                    
+                    // White border
+                    ctx.strokeStyle = '#fff';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                    ctx.lineWidth = 3;
                 });
-
-                ctx.stroke();
 
                 // Calculate and display growth percentage
                 if (firstValue && lastValue && firstValue !== 0) {
