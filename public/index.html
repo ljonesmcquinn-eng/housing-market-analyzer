@@ -3965,6 +3965,11 @@ function switchRentalType(type) {
                 ctx.beginPath();
 
                 let firstPoint = true;
+                let firstValue = null;
+                let lastValue = null;
+                let lastX = 0;
+                let lastY = 0;
+
                 years.forEach((year, yearIndex) => {
                     const value = data[year];
                     if (value === undefined) return;
@@ -3975,9 +3980,14 @@ function switchRentalType(type) {
                     if (firstPoint) {
                         ctx.moveTo(x, y);
                         firstPoint = false;
+                        firstValue = value;
                     } else {
                         ctx.lineTo(x, y);
                     }
+
+                    lastValue = value;
+                    lastX = x;
+                    lastY = y;
 
                     // Draw point
                     ctx.beginPath();
@@ -3987,6 +3997,18 @@ function switchRentalType(type) {
                 });
 
                 ctx.stroke();
+
+                // Calculate and display growth percentage
+                if (firstValue && lastValue && firstValue !== 0) {
+                    const growthPercent = ((lastValue - firstValue) / firstValue * 100).toFixed(1);
+                    const growthText = (growthPercent >= 0 ? '+' : '') + growthPercent + '%';
+                    
+                    // Draw growth percentage label near the end of the line
+                    ctx.font = 'bold 14px sans-serif';
+                    ctx.fillStyle = color;
+                    ctx.textAlign = 'left';
+                    ctx.fillText(growthText, lastX + 10, lastY);
+                }
             });
 
             // Draw legend
